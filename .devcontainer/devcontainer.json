@@ -2,15 +2,8 @@
 // https://containers.dev/implementors/json_reference/
 {
 	"name": "Monolog-WP-CLI",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": {
-			// Update VARIANT to pick a PHP version.
-			"VARIANT": "8.3",
-			"NODE_VERSION": "none"
-		}
-	},
-	"updateContentCommand": "composer install --prefer-dist --no-progress --no-interaction",
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.3",
+	"postCreateCommand": "composer install --prefer-dist --no-progress --no-interaction",
 	"containerEnv": {
 		"COMPOSER_MEMORY_LIMIT": "-1"
 	},
@@ -22,14 +15,7 @@
 			"settings": {
 				"php.validate.executablePath": "/usr/local/bin/php",
 				"php.debug.port": 9003
-			},
-			// Add the IDs of extensions you want installed when the container is created.
-			"extensions": [
-				"xdebug.php-debug",
-				"bmewburn.vscode-intelephense-client",
-				"ikappas.composer",
-				"recca0120.vscode-phpunit"
-			]
+			}
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

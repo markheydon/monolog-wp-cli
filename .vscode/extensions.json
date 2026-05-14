@@ -2,7 +2,6 @@
     "recommendations": [
         "xdebug.php-debug",
         "bmewburn.vscode-intelephense-client",
-        "ikappas.composer",
         "recca0120.vscode-phpunit"
     ]
 }
