@@ -590,7 +590,10 @@ class WPCLIHandlerTest extends TestCase
         $this->assertStringContainsString('Only shown when running wp with --debug', $calls[2]['message']);
 
         // INFO is below the handler threshold (WARNING), so it should not be routed.
-        $this->assertStringNotContainsString('General logging - will not be shown when running wp with --quiet', implode(' ', array_column($calls, 'message')));
+        $this->assertStringNotContainsString(
+            'General logging - will not be shown when running wp with --quiet',
+            implode(' ', array_column($calls, 'message'))
+        );
     }
 
     /**
