@@ -13,6 +13,10 @@ use WP_CLI;
 /**
  * Handler for Monolog that uses WP-CLI methods to for logging.
  *
+ * @since 1.0.0
+ * @link https://github.com/markheydon/monolog-wp-cli
+ * @author Mark Heydon <contact@mhcg.co.uk>
+ * @license MIT
  * @package MHCG\Monolog\Handler
  */
 class WPCLIHandler extends AbstractProcessingHandler

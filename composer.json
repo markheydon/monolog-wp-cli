@@ -5,6 +5,7 @@
     "log",
     "logging",
     "psr-3",
+    "psr-12",
     "wp-cli"
   ],
   "license": "MIT",
@@ -38,7 +39,7 @@
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
-    "lint:md": "vendor/bin/phpmd src text codesize,unusedcode",
+    "lint:md": "php -d xdebug.mode=off vendor/bin/phpmd src text codesize,unusedcode",
     "lint:cs": "vendor/bin/phpcs",
     "lint": [
       "@lint:md",
@@ -50,8 +51,8 @@
     ]
   },
   "support": {
-    "issues": "https://github.com/mhcg/monolog-wp-cli/issues",
-    "wiki": "https://github.com/mhcg/monolog-wp-cli/wiki",
-    "source": "https://github.com/mhcg/monolog-wp-cli"
+    "issues": "https://github.com/markheydon/monolog-wp-cli/issues",
+    "wiki": "https://github.com/markheydon/monolog-wp-cli/wiki",
+    "source": "https://github.com/markheydon/monolog-wp-cli"
   }
 }

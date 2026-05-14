@@ -3,6 +3,11 @@
 {
 	"name": "Monolog-WP-CLI",
 	"image": "mcr.microsoft.com/devcontainers/php:1-8.3",
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"version": "2"
+		}
+	},
 	"postCreateCommand": "composer install --prefer-dist --no-progress --no-interaction",
 	"containerEnv": {
 		"COMPOSER_MEMORY_LIMIT": "-1",
@@ -20,7 +25,9 @@
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [9003],
+	"forwardPorts": [
+		9003
+	],
 	// Use 'portsAttributes' to set default properties for specific forwarded ports. More info: https://code.visualstudio.com/docs/remote/devcontainerjson-reference.
 	// "portsAttributes": {
 	// 	"8000": {

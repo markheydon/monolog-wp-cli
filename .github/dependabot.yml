@@ -5,7 +5,12 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      composer-dependencies:
+      composer-production-dependencies:
+        dependency-type: "production"
+        patterns:
+          - "*"
+      composer-development-dependencies:
+        dependency-type: "development"
         patterns:
           - "*"
     open-pull-requests-limit: 5
@@ -17,7 +22,15 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      github-actions-dependencies:
+      github-actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+      github-actions-major:
+        update-types:
+          - "major"
         patterns:
           - "*"
     open-pull-requests-limit: 5

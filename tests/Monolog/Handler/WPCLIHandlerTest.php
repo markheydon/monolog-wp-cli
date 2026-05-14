@@ -26,10 +26,10 @@ class WPCLIHandlerTest extends TestCase
     {
         parent::setUp();
 
-        if (!class_exists('ExitException')) {
+        if (!class_exists('ExitException', false)) {
             class_alias('MHCGDev\Monolog\Stubs\MockExitException', 'ExitException');
         }
-        if (!class_exists('WP_CLI')) {
+        if (!class_exists('WP_CLI', false)) {
             class_alias('MHCGDev\Monolog\Stubs\MockWPCLI', 'WP_CLI');
         }
     }
@@ -569,6 +569,7 @@ class WPCLIHandlerTest extends TestCase
         $this->sanityCheck();
 
         $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
 
         $log = self::getLoggerObjectForStandardTest();
         $log->pushHandler(new WPCLIHandler(Logger::WARNING));
@@ -579,7 +580,17 @@ class WPCLIHandlerTest extends TestCase
         $log->info('General logging - will not be shown when running wp with --quiet');
 
         unset($log);
-        $this->assertTrue(true);
+
+        $calls = \WP_CLI::getCalls();
+        $this->assertCount(3, $calls);
+        $this->assertSame(['warning', 'error', 'debug'], array_column($calls, 'method'));
+
+        $this->assertStringContainsString('This is a warning', $calls[0]['message']);
+        $this->assertStringContainsString('An error has occurred', $calls[1]['message']);
+        $this->assertStringContainsString('Only shown when running wp with --debug', $calls[2]['message']);
+
+        // INFO is below the handler threshold (WARNING), so it should not be routed.
+        $this->assertStringNotContainsString('General logging - will not be shown when running wp with --quiet', implode(' ', array_column($calls, 'message')));
     }
 
     /**
