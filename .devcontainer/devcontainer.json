@@ -5,7 +5,8 @@
 	"image": "mcr.microsoft.com/devcontainers/php:1-8.3",
 	"postCreateCommand": "composer install --prefer-dist --no-progress --no-interaction",
 	"containerEnv": {
-		"COMPOSER_MEMORY_LIMIT": "-1"
+		"COMPOSER_MEMORY_LIMIT": "-1",
+		"XDEBUG_MODE": "off"
 	},
 	// Configure tool-specific properties.
 	"customizations": {

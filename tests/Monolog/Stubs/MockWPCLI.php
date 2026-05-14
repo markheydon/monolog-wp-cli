@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace MHCGDev\Monolog\Stubs;
 
@@ -14,7 +16,7 @@ class MockWPCLI
     {
         // Note: value of $name is case sensitive.
         $message = "Mock object method not implemented '$name' "
-            . implode(', ', $arguments). "\n";
+            . implode(', ', $arguments) . "\n";
         throw new \RuntimeException($message);
     }
 
@@ -22,7 +24,7 @@ class MockWPCLI
     {
         // Note: value of $name is case sensitive.
         $message = "Mock static method not implemented '$name' "
-            . implode(', ', $arguments). "\n";
+            . implode(', ', $arguments) . "\n";
         throw new \RuntimeException($message);
     }
     //</editor-fold>

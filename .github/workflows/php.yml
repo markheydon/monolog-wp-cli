@@ -1,4 +1,4 @@
-name: PHP Build, Test and Coverage
+name: PHP CI
 
 on:
   push:
@@ -15,48 +15,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-test:
+  test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
         php-version: ['8.3', '8.4']
 
-    name: PHP ${{ matrix.php-version }} on ${{ matrix.os }}
+    name: PHP ${{ matrix.php-version }}
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer, phpunit
-          extensions: pcov
-          coverage: pcov
+          tools: composer
+          coverage: none
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup problem matchers for PHP
-        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-    
-      - name: Setup problem matchers for PHPUnit
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
         
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Audit dependencies
+        run: composer audit --locked --no-interaction
     
       - name: Run test suite
-        run: vendor/bin/phpunit --coverage-text
+        run: vendor/bin/phpunit
+
+      - name: Run PHPMD
+        if: matrix.php-version == '8.3'
+        run: composer run lint:md
+
+      - name: Run PHPCS
+        if: matrix.php-version == '8.3'
+        run: composer run lint:cs

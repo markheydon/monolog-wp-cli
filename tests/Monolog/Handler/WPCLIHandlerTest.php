@@ -1,8 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/**
- * Unit tests for WPCLIHandler
- */
+declare(strict_types=1);
 
 namespace MHCGDev\Monolog\Handler;
 
@@ -22,7 +20,7 @@ use Monolog\Logger;
 class WPCLIHandlerTest extends TestCase
 {
     /** @var string Constant for bodging sanity check */
-    const RUNNING_IN_TEST = 'RunningInTest_RunningInTest';
+    public const RUNNING_IN_TEST = 'RunningInTest_RunningInTest';
 
     protected function setUp(): void
     {

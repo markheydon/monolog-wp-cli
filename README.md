@@ -1,6 +1,7 @@
 # Monolog WP-CLI Handler
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/mhcg/monolog-wp-cli.svg)](https://packagist.org/packages/mhcg/monolog-wp-cli)
+[![PHP CI](https://github.com/markheydon/monolog-wp-cli/actions/workflows/php.yml/badge.svg?branch=main)](https://github.com/markheydon/monolog-wp-cli/actions/workflows/php.yml)
 [![Code Climate](https://img.shields.io/codeclimate/maintainability/mhcg/monolog-wp-cli.svg)](https://codeclimate.com/github/mhcg/monolog-wp-cli)
 [![Code Climate coverage](https://img.shields.io/codeclimate/coverage/mhcg/monolog-wp-cli)](https://codeclimate.com/github/mhcg/monolog-wp-cli)
 
@@ -16,6 +17,16 @@ Install the latest version with Composer.
 
 ```shell
 $ composer require mhcg/monolog-wp-cli
+```
+
+## Development
+
+Run checks locally before committing.
+
+```shell
+composer run test
+composer run lint
+composer run qa
 ```
 
 ## Basic Usage
