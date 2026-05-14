@@ -562,6 +562,29 @@ class WPCLIHandlerTest extends TestCase
     }
 
     /**
+     * Smoke test for the README "Example 1 - Basic Concept" usage.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testReadmeExample1BasicConcept()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+
+        $log = self::getLoggerObjectForStandardTest();
+        $log->pushHandler(new WPCLIHandler(Logger::WARNING));
+
+        $log->warning('This is a warning');
+        $log->error('An error has occurred');
+        $log->debug('Only shown when running wp with --debug');
+        $log->info('General logging - will not be shown when running wp with --quiet');
+
+        unset($log);
+        $this->assertTrue(true);
+    }
+
+    /**
      * Test that Logger::critical() DOES throw an error using WPCLIHander.
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::write

@@ -6,6 +6,11 @@
 
 Handler for [Monolog](https://github.com/Seldaek/monolog) to support outputting to WP-CLI when running wp command lines.
 
+## Requirements
+
+- PHP 8.3+
+- Monolog 2.5+
+
 ## Installation
 Install the latest version with Composer.
 
