@@ -8,7 +8,7 @@ Extension for [Monolog](https://github.com/Seldaek/monolog) that routes log outp
 ## Requirements
 
 - PHP 8.3+
-- Monolog 2.5+
+- Monolog 2.5
 
 ## Installation
 
