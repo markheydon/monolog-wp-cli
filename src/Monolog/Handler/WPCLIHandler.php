@@ -1,20 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/**
- * Handler for Monolog that uses WP-CLI methods to for logging.
- *
- * LICENSE: See LICENSE file included with this file.
- *
- * @version 1.0.1
- *
- * @since 1.0.0
- * @package MHCG\Monolog\Handler
- *
- * @link https://github.com/mhcg/monolog-wp-cli
- *
- * @author Mark Heydon <contact@mhcg.co.uk>
- * @license MIT
- */
+declare(strict_types=1);
 
 namespace MHCG\Monolog\Handler;
 
@@ -27,14 +13,18 @@ use WP_CLI;
 /**
  * Handler for Monolog that uses WP-CLI methods to for logging.
  *
+ * @since 1.0.0
+ * @link https://github.com/markheydon/monolog-wp-cli
+ * @author Mark Heydon <contact@mhcg.co.uk>
+ * @license MIT
  * @package MHCG\Monolog\Handler
  */
 class WPCLIHandler extends AbstractProcessingHandler
 {
     /** @var string Format used when WP_DEBUG disabled */
-    const WP_CLI_FORMAT_STANDARD = "%message%";
+    public const WP_CLI_FORMAT_STANDARD = "%message%";
     /** @var string Format used when WP_DEBUG enabled */
-    const WP_CLI_FORMAT_VERBOSE = "%message% %context% %extra%";
+    public const WP_CLI_FORMAT_VERBOSE = "%message% %context% %extra%";
 
     /** @var bool Use verbose style log message format */
     private $verbose = false;

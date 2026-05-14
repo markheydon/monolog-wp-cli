@@ -1,16 +1,17 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.195.0/containers/php
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the reference:
+// https://containers.dev/implementors/json_reference/
 {
 	"name": "Monolog-WP-CLI",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": {
-			// Update VARIANT to pick a PHP version: 8, 8.0, 7, 7.4, 7.3
-			// Append -bullseye or -buster to pin to an OS version.
-			// Use -bullseye variants on local on arm64/Apple Silicon.
-			"VARIANT": "7.4",
-			"NODE_VERSION": "none"
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.3",
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"version": "2"
 		}
+	},
+	"postCreateCommand": "composer install --prefer-dist --no-progress --no-interaction",
+	"containerEnv": {
+		"COMPOSER_MEMORY_LIMIT": "-1",
+		"XDEBUG_MODE": "off"
 	},
 	// Configure tool-specific properties.
 	"customizations": {
@@ -18,19 +19,15 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"php.validate.executablePath": "/usr/local/bin/php"
-			},
-			// Add the IDs of extensions you want installed when the container is created.
-			"extensions": [
-				"xdebug.php-debug",
-				"bmewburn.vscode-intelephense-client",
-				"ikappas.composer",
-				"recca0120.vscode-phpunit"
-			]
+				"php.validate.executablePath": "/usr/local/bin/php",
+				"php.debug.port": 9003
+			}
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [8080],
+	"forwardPorts": [
+		9003
+	],
 	// Use 'portsAttributes' to set default properties for specific forwarded ports. More info: https://code.visualstudio.com/docs/remote/devcontainerjson-reference.
 	// "portsAttributes": {
 	// 	"8000": {

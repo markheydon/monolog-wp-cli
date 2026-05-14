@@ -1,8 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/**
- * Unit tests for WPCLIHandler
- */
+declare(strict_types=1);
 
 namespace MHCGDev\Monolog\Handler;
 
@@ -22,16 +20,16 @@ use Monolog\Logger;
 class WPCLIHandlerTest extends TestCase
 {
     /** @var string Constant for bodging sanity check */
-    const RUNNING_IN_TEST = 'RunningInTest_RunningInTest';
+    public const RUNNING_IN_TEST = 'RunningInTest_RunningInTest';
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        if (!class_exists('ExitException')) {
+        if (!class_exists('ExitException', false)) {
             class_alias('MHCGDev\Monolog\Stubs\MockExitException', 'ExitException');
         }
-        if (!class_exists('WP_CLI')) {
+        if (!class_exists('WP_CLI', false)) {
             class_alias('MHCGDev\Monolog\Stubs\MockWPCLI', 'WP_CLI');
         }
     }
@@ -559,6 +557,43 @@ class WPCLIHandlerTest extends TestCase
 
         unset($logger);
         $this->assertTrue(true);
+    }
+
+    /**
+     * Smoke test for the README "Example 1 - Basic Concept" usage.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testReadmeExample1BasicConcept()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $log = self::getLoggerObjectForStandardTest();
+        $log->pushHandler(new WPCLIHandler(Logger::WARNING));
+
+        $log->warning('This is a warning');
+        $log->error('An error has occurred');
+        $log->debug('Only shown when running wp with --debug');
+        $log->info('General logging - will not be shown when running wp with --quiet');
+
+        unset($log);
+
+        $calls = \WP_CLI::getCalls();
+        $this->assertCount(3, $calls);
+        $this->assertSame(['warning', 'error', 'debug'], array_column($calls, 'method'));
+
+        $this->assertStringContainsString('This is a warning', $calls[0]['message']);
+        $this->assertStringContainsString('An error has occurred', $calls[1]['message']);
+        $this->assertStringContainsString('Only shown when running wp with --debug', $calls[2]['message']);
+
+        // INFO is below the handler threshold (WARNING), so it should not be routed.
+        $this->assertStringNotContainsString(
+            'General logging - will not be shown when running wp with --quiet',
+            implode(' ', array_column($calls, 'message'))
+        );
     }
 
     /**
