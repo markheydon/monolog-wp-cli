@@ -17,12 +17,13 @@ name: PHPMD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "master" ]
+    branches: [ "main" ]
   schedule:
     - cron: '27 13 * * 4'
+  workflow_dispatch:
 
 permissions:
   contents: read

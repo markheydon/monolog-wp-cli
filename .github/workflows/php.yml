@@ -2,9 +2,17 @@ name: PHP Build, Test and Coverage
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-test:
@@ -12,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php-version: ['8.3']
+        php-version: ['8.3', '8.4']
 
     name: PHP ${{ matrix.php-version }} on ${{ matrix.os }}
 
@@ -38,7 +46,7 @@ jobs:
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Validate composer.json and composer.lock
-        run: composer validate
+        run: composer validate --strict
         
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -48,7 +56,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --no-interaction
     
       - name: Run test suite
-        run: phpunit --coverage-text
+        run: vendor/bin/phpunit --coverage-text

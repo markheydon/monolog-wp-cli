@@ -10,13 +10,18 @@
 			"NODE_VERSION": "none"
 		}
 	},
+	"updateContentCommand": "composer install --prefer-dist --no-progress --no-interaction",
+	"containerEnv": {
+		"COMPOSER_MEMORY_LIMIT": "-1"
+	},
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"php.validate.executablePath": "/usr/local/bin/php"
+				"php.validate.executablePath": "/usr/local/bin/php",
+				"php.debug.port": 9003
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
@@ -28,7 +33,7 @@
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [8080],
+	"forwardPorts": [9003],
 	// Use 'portsAttributes' to set default properties for specific forwarded ports. More info: https://code.visualstudio.com/docs/remote/devcontainerjson-reference.
 	// "portsAttributes": {
 	// 	"8000": {
