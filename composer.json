@@ -19,7 +19,7 @@
   "type": "library",
   "require": {
     "php": "^8.3",
-    "monolog/monolog": "^2.5"
+    "monolog/monolog": "^2.5 || ^3.0"
   },
   "require-dev": {
     "wp-cli/wp-cli": "^2.12",
