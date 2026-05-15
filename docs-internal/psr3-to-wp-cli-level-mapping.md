@@ -63,9 +63,9 @@ If the goal is to align the default mapping more closely with PSR-3 while stayin
     Logger::NOTICE => ['method' => 'log', 'includeLevelName' => true],
     Logger::WARNING => ['method' => 'warning', 'includeLevelName' => true],
     Logger::ERROR => ['method' => 'error', 'includeLevelName' => true, 'exit' => false],
-    Logger::CRITICAL => ['method' => 'error', 'includeLevelName' => true],
-    Logger::ALERT => ['method' => 'error', 'includeLevelName' => true],
-    Logger::EMERGENCY => ['method' => 'error', 'includeLevelName' => true],
+    Logger::CRITICAL => ['method' => 'error', 'includeLevelName' => true, 'exit' => true],
+    Logger::ALERT => ['method' => 'error', 'includeLevelName' => true, 'exit' => true],
+    Logger::EMERGENCY => ['method' => 'error', 'includeLevelName' => true, 'exit' => true],
 ]
 ```
 
