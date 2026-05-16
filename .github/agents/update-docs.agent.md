@@ -46,6 +46,7 @@ Before editing docs, inspect and align to:
 - Keep `README.md` Packagist-friendly.
 - Keep public docs and internal docs separated by purpose.
 - Do not edit `docs-internal/` unless explicitly requested.
+- For WordPress-oriented code snippets, use WordPress Coding Standards style.
 
 ## Update Strategy
 

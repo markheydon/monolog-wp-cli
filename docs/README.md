@@ -1,14 +1,25 @@
 # Public Documentation
 
-This folder is reserved for public-facing documentation intended for users of the package.
+This documentation is organised using Diataxis so each page has one primary job.
 
-Purpose:
-- Host end-user documentation that can be published via GitHub Pages.
-- Provide guides for installation, usage, and release-facing notes.
+## Tutorials
 
-Out of scope:
-- Internal maintenance notes.
-- AI agent operating notes.
-- Repository process decisions.
+- [First logger in WP-CLI](tutorials/first-logger-in-wp-cli.md): Learn by building a minimal working setup.
 
-Internal and technical reference material lives in ../docs-internal.
+## How-to guides
+
+- [Use WPCLIHandler in a command](how-to/use-wpclihandler-in-a-command.md): Complete a focused implementation task.
+
+## Reference
+
+- [WPCLIHandler reference](reference/wpclihandler.md): Behaviour, level mapping, and formatter details.
+
+## Explanation
+
+- [Compatibility and release-line policy](explanation/compatibility-and-release-line-policy.md): Why the package targets Monolog 2 and current PHP constraints.
+
+## Scope
+
+Public docs in this folder are for package users and contributors.
+
+Maintainer-only operational notes remain in `docs-internal/`.

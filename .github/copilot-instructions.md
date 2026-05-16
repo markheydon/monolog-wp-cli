@@ -41,6 +41,7 @@ Do not invent behaviour, compatibility claims, or roadmap commitments that are n
 - Keep each public doc page clearly anchored to one primary Diataxis type.
 - Use `.github/skills/documentation-writer/SKILL.md` as the primary Diataxis guidance for content in `docs/`.
 - Use `.github/skills/repo-readme-generator/SKILL.md` for `README.md` updates only; do not treat it as a generator for `docs/` pages.
+- For WordPress-facing code snippets in `README.md` and `docs/`, use WordPress Coding Standards style (for example spacing, control-structure formatting, and WordPress naming conventions where relevant).
 
 ## Change Discipline
 

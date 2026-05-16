@@ -15,6 +15,7 @@ Required outcomes:
 - Use `.github/skills/documentation-writer/SKILL.md` for Diataxis-driven updates to `docs/` pages.
 - Sync public docs in `docs/` with current code and policy.
 - Apply Diataxis intent to each updated page in `docs/` (tutorial, how-to, reference, explanation).
+- Ensure WordPress-oriented code snippets follow WordPress Coding Standards style.
 - Keep changes evidence-based, concise, and technical.
 - Keep wording in UK English.
 - Do not modify `docs-internal/` unless explicitly requested.
