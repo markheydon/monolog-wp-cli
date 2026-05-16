@@ -27,8 +27,7 @@ Use Monolog with the handler and emit a few levels:
 use Monolog\Logger;
 use MHCG\Monolog\Handler\WPCLIHandler;
 
-function mycommand_command( $args )
-{
+function mycommand_command( $args ) {
     $log = new Logger( 'mycommand' );
     $log->pushHandler( new WPCLIHandler( Logger::INFO ) );
 
@@ -66,4 +65,4 @@ Expected behaviour:
 
 ## Next step
 
-If you already have an existing command and only need integration steps, continue with the how-to guide.
+If you already have an existing command and only need integration steps, continue with the [how-to guide](../how-to/use-wpclihandler-in-a-command.md).

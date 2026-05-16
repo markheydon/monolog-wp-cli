@@ -18,8 +18,7 @@ composer require mhcg/monolog-wp-cli
 use Monolog\Logger;
 use MHCG\Monolog\Handler\WPCLIHandler;
 
-function mycommand_command( $args )
-{
+function mycommand_command( $args ) {
     $logger = new Logger( 'mycommand' );
     $logger->pushHandler( new WPCLIHandler( Logger::INFO ) );
 
