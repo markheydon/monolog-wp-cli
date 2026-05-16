@@ -12,18 +12,17 @@
   "authors": [
     {
       "name": "Mark Heydon",
-      "email": "contact@mhcg.co.uk",
       "role": "Developer"
     }
   ],
   "type": "library",
   "require": {
-    "php": "^8.3",
+    "php": "^7.2 || ^8.0",
     "monolog/monolog": "^2.5"
   },
   "require-dev": {
     "wp-cli/wp-cli": "^2.12",
-    "phpunit/phpunit": "^12.5",
+    "phpunit/phpunit": "^8.5 || ^9.6 || ^12.5",
     "phpmd/phpmd": "^2.15",
     "squizlabs/php_codesniffer": "^3.11 || ^4.0"
   },
@@ -39,6 +38,7 @@
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
+    "test:runtime-smoke": "php tests/runtime-smoke.php",
     "lint:md": "php -d xdebug.mode=off vendor/bin/phpmd src text codesize,unusedcode",
     "lint:cs": "vendor/bin/phpcs",
     "lint": [
