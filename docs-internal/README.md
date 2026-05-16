@@ -12,6 +12,7 @@ Keep entries concise and factual. Prefer one file per topic.
 ## Index
 
 - [Package identity and naming](package-identity.md)
+- [PHP version strategy](php-version-strategy.md)
 - [PSR-3 to WP-CLI Level Mapping](psr3-to-wp-cli-level-mapping.md)
 - [Repository transfer and Packagist behaviour](repository-transfer-and-packagist.md)
 - [README and badge policy](readme-and-badges.md)
