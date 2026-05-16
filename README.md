@@ -7,8 +7,8 @@ Extension for [Monolog](https://github.com/Seldaek/monolog) that routes log outp
 
 ## Requirements
 
-- PHP 7.2+
-- Monolog 2.5+
+- PHP `^7.2 || ^8.0`
+- monolog/monolog `^2.5`
 
 Current stable releases target the Monolog 2 line. Monolog 3 support remains planned for a future major release.
 
@@ -120,6 +120,7 @@ Run local checks:
 
 ```shell
 composer run test
+composer run test:runtime-smoke
 composer run lint
 composer run qa
 ```
@@ -128,13 +129,15 @@ CI runs on pull requests and pushes to main, validates Composer metadata, runs r
 
 ## Testing and code quality
 
-- PHPUnit runs the test suite from tests.
-- PHPMD checks src for code-size and unused-code issues.
-- PHPCS enforces PSR-12 across src and tests.
+- PHPUnit runs the test suite from `tests/`.
+- PHPMD checks `src/` for code-size and unused-code issues.
+- PHPCS enforces PSR-12 across `src/` and `tests/`.
 
 ## Contributing
 
-Fork the repository and open a pull request for code changes, referencing the related issue where relevant. Documentation improvements are also welcome through the wiki.
+Fork the repository and open a pull request for code changes, referencing the related issue where relevant. For maintainer expectations, see [CONTRIBUTING](.github/CONTRIBUTING.md).
+
+Documentation improvements are also welcome through the project wiki.
 
 Please follow the [Code of Conduct](https://github.com/markheydon/monolog-wp-cli/blob/main/.github/CODE_OF_CONDUCT.md).
 

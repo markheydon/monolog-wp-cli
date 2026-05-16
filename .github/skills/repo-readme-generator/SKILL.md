@@ -50,6 +50,7 @@ Generate a concise, practical README.md for this repository by analysing reposit
 - Keep the current usage examples if they are still supported by the code and tests.
 - Prefer one short introductory paragraph followed by fenced code blocks.
 - Do not replace real examples with generic placeholders.
+- For WordPress-oriented snippets, use WordPress Coding Standards style.
 
 ## Testing
 - Mention PHPUnit, PHPMD, and PHPCS only if configured in the repository.
