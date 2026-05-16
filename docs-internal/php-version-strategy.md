@@ -3,7 +3,7 @@
 ## Executive summary
 
 - Set runtime PHP support by the Monolog major targeted by the release line.
-- Do not raise `require.php` only because maintainer tooling runs on newer PHP.
+- Do not raise `composer.json` `require -> php` only because maintainer tooling runs on newer PHP.
 - If this package must require a higher PHP minimum than the targeted Monolog line, treat it as an explicit breaking policy decision and document why.
 
 ## Purpose
@@ -13,7 +13,7 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 ## Baseline principles
 
 - Monolog major compatibility is the primary driver of runtime PHP support.
-- `composer.json` `require.php` reflects consumer runtime support, not maintainer workstation defaults.
+- `composer.json` `require -> php` reflects consumer runtime support, not maintainer workstation defaults.
 - Raising minimum PHP beyond the targeted Monolog floor is a breaking policy decision and must be justified in release notes.
 
 ## Decision rules (apply in order)
@@ -64,17 +64,25 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 
 - Treat this section as process guidance, not a static snapshot.
 - For each release or branch policy update:
-  - Read current `require.php` and `monolog/monolog` constraints from `composer.json`.
+  - Read current `require -> php` and `require -> monolog/monolog` constraints from `composer.json`.
   - Map those constraints to the decision rules above.
   - Record the chosen path:
     - **Alignment path:** runtime PHP floor matches the targeted Monolog line minimum.
     - **Intentional restriction path:** runtime PHP floor is higher than Monolog minimum and rationale is documented.
 - If you include concrete constraint values in this document, add a date label and update or remove them when they are no longer current.
 
+### Current application snapshot (2026-05-16)
+
+- Active release line target: Monolog `^2.5`.
+- Chosen path: **Alignment path**.
+- Runtime policy for this line: set `require -> php` to the Monolog 2 baseline (`7.2+`) using a Composer-compatible range (for example, `^7.2 || ^8.0`) and keep tooling requirements isolated to newer PHP CI jobs.
+- CI policy for this line: run runtime compatibility checks from the declared minimum upward, and keep PHPMD/PHPCS/audit (and any newer-only tooling) on dedicated newer-PHP jobs.
+- Monolog 3 status: documented as a future major release path; not part of the current line implementation.
+
 ## Decision checklist
 
 - Which Monolog major does this release line target?
-- Does `require.php` match that Monolog major's minimum policy?
+- Does `require -> php` match that Monolog major's minimum policy?
 - If stricter, is the reason explicit, valid, and documented?
 - Is the change breaking, and is release versioning aligned?
 - Does CI distinguish runtime minimum validation from tooling convenience jobs?

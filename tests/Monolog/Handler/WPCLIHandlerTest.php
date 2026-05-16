@@ -217,8 +217,12 @@ class WPCLIHandlerTest extends TestCase
     public function testValidateLoggerMapInvalidLevel()
     {
         $defaultMap = WPCLIHandler::getDefaultLoggerMap();
-        $this->expectExceptionMessageMatches('/has no entry for level/');
-        WPCLIHandler::validateLoggerMap($defaultMap, 999999, 'Whatever');
+        try {
+            WPCLIHandler::validateLoggerMap($defaultMap, 999999, 'Whatever');
+            $this->fail('Expected InvalidArgumentException was not thrown.');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertStringContainsString('has no entry for level', $e->getMessage());
+        }
     }
 
     /**
@@ -231,8 +235,12 @@ class WPCLIHandlerTest extends TestCase
                 'method' => 'method_does_not_exist'
             ]
         ];
-        $this->expectExceptionMessageMatches('/invalid method/');
-        WPCLIHandler::validateLoggerMap($map, 999999, 'Whatever');
+        try {
+            WPCLIHandler::validateLoggerMap($map, 999999, 'Whatever');
+            $this->fail('Expected InvalidArgumentException was not thrown.');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertStringContainsString('invalid method', $e->getMessage());
+        }
     }
 
     /**
@@ -246,12 +254,16 @@ class WPCLIHandlerTest extends TestCase
                 'exit' => true
             ]
         ];
-        $this->expectExceptionMessageMatches('/specifies exit/');
-        WPCLIHandler::validateLoggerMap(
-            $map,
-            Logger::DEBUG,
-            Logger::getLevelName(Logger::DEBUG)
-        );
+        try {
+            WPCLIHandler::validateLoggerMap(
+                $map,
+                Logger::DEBUG,
+                Logger::getLevelName(Logger::DEBUG)
+            );
+            $this->fail('Expected InvalidArgumentException was not thrown.');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertStringContainsString('specifies exit', $e->getMessage());
+        }
     }
 
     /**

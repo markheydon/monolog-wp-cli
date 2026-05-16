@@ -7,6 +7,7 @@
 
   <file>src</file>
   <file>tests</file>
+  <exclude-pattern>tests/runtime-smoke.php</exclude-pattern>
 
   <rule ref="PSR12"/>
 </ruleset>

@@ -27,3 +27,4 @@ Current policy:
 - Preserve the install command for the current package identity.
 - Preserve representative usage examples unless code/tests indicate they are outdated.
 - Avoid adding sections that do not reflect real repository artefacts.
+- Keep requirements and CI wording aligned with `composer.json` and `.github/workflows/php.yml`, including explicit distinction between runtime compatibility jobs and newer-PHP tooling jobs.

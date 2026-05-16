@@ -15,14 +15,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  runtime-compat:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php-version: ['8.3', '8.4']
+        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
 
-    name: PHP ${{ matrix.php-version }}
+    name: Runtime PHP ${{ matrix.php-version }}
 
     runs-on: ${{ matrix.os }}
 
@@ -40,21 +40,89 @@ jobs:
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
-        
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-progress --no-interaction --no-dev
+
+      - name: Run runtime smoke test
+        run: composer run test:runtime-smoke
+
+  unit-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            php-version: '7.2'
+            phpunit-version: '^8.5'
+          - os: ubuntu-latest
+            php-version: '7.3'
+            phpunit-version: '^9.6'
+          - os: ubuntu-latest
+            php-version: '7.4'
+            phpunit-version: '^9.6'
+          - os: ubuntu-latest
+            php-version: '8.0'
+            phpunit-version: '^9.6'
+          - os: ubuntu-latest
+            php-version: '8.1'
+            phpunit-version: '^9.6'
+          - os: ubuntu-latest
+            php-version: '8.2'
+            phpunit-version: '^9.6'
+          - os: ubuntu-latest
+            php-version: '8.3'
+            phpunit-version: '^12.5'
+          - os: ubuntu-latest
+            php-version: '8.4'
+            phpunit-version: '^12.5'
+
+    name: Unit PHP ${{ matrix.php-version }}
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+          coverage: none
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-progress --no-interaction --with-all-dependencies phpunit/phpunit:${{ matrix.phpunit-version }}
+
+      - name: Run test suite
+        run: vendor/bin/phpunit
+
+  qa-tooling:
+    name: Tooling PHP 8.3
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+          coverage: none
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Audit dependencies
-        if: matrix.php-version == '8.3'
         run: composer audit --locked --no-interaction
-    
-      - name: Run test suite
-        run: vendor/bin/phpunit
 
       - name: Run PHPMD
-        if: matrix.php-version == '8.3'
         run: composer run lint:md
 
       - name: Run PHPCS
-        if: matrix.php-version == '8.3'
         run: composer run lint:cs

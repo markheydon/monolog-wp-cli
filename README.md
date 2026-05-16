@@ -7,8 +7,10 @@ Extension for [Monolog](https://github.com/Seldaek/monolog) that routes log outp
 
 ## Requirements
 
-- PHP 8.3+
-- Monolog 2.5
+- PHP 7.2+
+- Monolog 2.5+
+
+Current stable releases target the Monolog 2 line. Monolog 3 support remains planned for a future major release.
 
 ## Installation
 
@@ -122,7 +124,7 @@ composer run lint
 composer run qa
 ```
 
-CI runs on pull requests and pushes to main, validates Composer metadata, audits locked dependencies, runs PHPUnit on PHP 8.3 and 8.4, and runs PHPMD and PHPCS on PHP 8.3.
+CI runs on pull requests and pushes to main, validates Composer metadata, runs runtime compatibility smoke checks on PHP 7.2 through 8.4, runs PHPUnit unit tests on PHP 7.2 through 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3.
 
 ## Testing and code quality
 
