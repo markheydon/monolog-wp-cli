@@ -94,7 +94,7 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: composer update --prefer-dist --no-progress --no-interaction --with-all-dependencies phpunit/phpunit:${{ matrix.phpunit-version }}
+        run: composer update --prefer-dist --no-progress --no-interaction --with-all-dependencies monolog/monolog psr/log wp-cli/wp-cli phpunit/phpunit:${{ matrix.phpunit-version }}
 
       - name: Run test suite
         run: vendor/bin/phpunit
