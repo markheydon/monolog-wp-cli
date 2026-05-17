@@ -1,0 +1,41 @@
+name: Composer Diff
+
+on:
+  pull_request:
+    paths:
+      - 'composer.lock'
+
+permissions:
+  contents: read
+  pull-requests: write
+  
+jobs:
+  composer-diff:
+    name: Composer Diff
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: composer-diff-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Required to make it possible to compare with PR base branch
+
+      - name: Generate composer diff
+        id: composer_diff # To reference the output in comment
+        uses: IonBazan/composer-diff-action@v1.2
+
+      - uses: marocchino/sticky-pull-request-comment@v3
+        # An empty diff result will break this action.
+        if: ${{ github.event.pull_request.head.repo.fork == false && steps.composer_diff.outputs.composer_diff_exit_code != '0' && steps.composer_diff.outputs.composer_diff != '' }}
+        with:
+          header: composer-diff # Creates a collapsed comment with the report
+          message: |
+            <details>
+            <summary>Composer package changes</summary>
+
+            ${{ steps.composer_diff.outputs.composer_diff }}
+
+            </details>
