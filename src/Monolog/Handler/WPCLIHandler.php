@@ -53,9 +53,34 @@ class WPCLIHandler extends AbstractProcessingHandler
         $this->verbose = $verbose;
 
         if ($loggerMap !== null) {
-            $this->loggerMap = array_replace(self::getDefaultLoggerMap(), $loggerMap);
+            $this->loggerMap = self::mergeLoggerMapOverrides($loggerMap);
             self::validateAllLoggerMapEntries($this->loggerMap);
         }
+    }
+
+    /**
+     * Merge user logger map overrides over defaults at per-level key depth.
+     *
+     * @param array $loggerMap Override entries keyed by Monolog level.
+     *
+     * @return array
+     */
+    private static function mergeLoggerMapOverrides(array $loggerMap): array
+    {
+        $defaultMap = self::getDefaultLoggerMap();
+
+        foreach ($loggerMap as $level => $entry) {
+            $level = (int)$level;
+
+            if (!isset($defaultMap[$level]) || !is_array($defaultMap[$level]) || !is_array($entry)) {
+                $defaultMap[$level] = $entry;
+                continue;
+            }
+
+            $defaultMap[$level] = array_replace($defaultMap[$level], $entry);
+        }
+
+        return $defaultMap;
     }
 
     /**
@@ -184,9 +209,9 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function validateAllLoggerMapEntries(array $map): void
     {
-        foreach ($map as $level => $entry) {
-            unset($entry);
-            self::validateLoggerMap($map, (int)$level, Logger::getLevelName($level));
+        foreach (array_keys($map) as $level) {
+            $level = (int)$level;
+            self::validateLoggerMap($map, $level, Logger::getLevelName($level));
         }
     }
 

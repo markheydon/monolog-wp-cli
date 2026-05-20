@@ -20,15 +20,12 @@ if (!class_exists('MHCG\\Monolog\\Handler\\WPCLIHandler')) {
     require_once '/workspaces/monolog-wp-cli/vendor/autoload.php';
 }
 
-use MHCG\Monolog\Handler\WPCLIHandler;
-use Monolog\Logger;
-
 WP_CLI::add_command('monolog-smoke', static function (array $args, array $assocArgs): void {
     $level = isset($assocArgs['level']) ? (string) $assocArgs['level'] : 'notice';
     $message = isset($assocArgs['message']) ? (string) $assocArgs['message'] : 'smoke';
 
-    $logger = new Logger('monolog-smoke');
-    $logger->pushHandler(new WPCLIHandler(Logger::DEBUG));
+    $logger = new \Monolog\Logger('monolog-smoke');
+    $logger->pushHandler(new \MHCG\Monolog\Handler\WPCLIHandler(\Monolog\Logger::DEBUG));
 
     switch ($level) {
         case 'debug':

@@ -121,7 +121,7 @@ class WPCLIHandlerTest extends TestCase
         $this->pretendToBeInWPCLI();
         $var = self::getHandleObjectForStandardTest();
         $this->assertTrue(is_object($var));
-        $this->isInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler');
+        $this->assertInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler', $var);
         unset($var);
     }
 
@@ -135,7 +135,7 @@ class WPCLIHandlerTest extends TestCase
         $this->pretendToBeInWPCLI();
         $var = new WPCLIHandler(Logger::DEBUG, true, true);
         $this->assertTrue(is_object($var));
-        $this->isInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler');
+        $this->assertInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler', $var);
         unset($var);
     }
 
@@ -159,7 +159,7 @@ class WPCLIHandlerTest extends TestCase
             ]
         );
         $this->assertTrue(is_object($var));
-        $this->isInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler');
+        $this->assertInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler', $var);
         unset($var);
     }
 
