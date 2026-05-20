@@ -148,11 +148,35 @@ Run local checks:
 ```shell
 composer run test
 composer run test:runtime-smoke
+composer run test:wp
 composer run lint
 composer run qa
 ```
 
-CI runs on pull requests and pushes to main, validates Composer metadata, runs runtime compatibility smoke checks on PHP 7.2 through 8.4, runs PHPUnit unit tests on PHP 7.2 through 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3.
+Composer script quick reference:
+
+- `test`: run PHPUnit tests.
+- `test:runtime-smoke`: run fast runtime contract smoke checks.
+- `wp:env:up`: start local WordPress integration containers.
+- `test:wp:setup`: bootstrap WordPress and activate fixture plugin.
+- `test:wp:smoke`: run WP-CLI integration smoke checks.
+- `test:wp`: run `wp:env:up`, `test:wp:setup`, and `test:wp:smoke`.
+- `wp:env:down`: stop integration containers and remove volumes.
+- `lint`: run PHPMD and PHPCS.
+- `qa`: run PHPUnit plus lint checks.
+
+Run WordPress integration checks step-by-step:
+
+```shell
+composer run wp:env:up
+composer run test:wp:setup
+composer run test:wp:smoke
+composer run wp:env:down
+```
+
+Note: `composer run test:wp` does not call `wp:env:down`; run teardown explicitly when you are finished.
+
+CI runs on pull requests and pushes to main. The PHP workflow validates Composer metadata, runs runtime compatibility smoke checks on PHP 7.2 through 8.4, runs PHPUnit unit tests on PHP 7.2 through 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3. A separate WordPress integration workflow provisions WordPress with WP-CLI and runs the integration smoke checks.
 
 ## Testing and code quality
 

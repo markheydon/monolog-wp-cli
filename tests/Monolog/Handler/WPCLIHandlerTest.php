@@ -728,6 +728,66 @@ class WPCLIHandlerTest extends TestCase
     }
 
     /**
+     * Test that ERROR routes through WP_CLI::error without requesting exit.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testHandlerRoutesErrorWithoutExitByDefault()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler(self::getHandleObjectForStandardTest());
+        $logger->error('Recoverable error');
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(1, $calls);
+        $this->assertSame('error', $calls[0]['method']);
+        $this->assertFalse($calls[0]['exit']);
+        $this->assertStringContainsString('(ERROR)', $calls[0]['message']);
+        $this->assertStringContainsString('Recoverable error', $calls[0]['message']);
+
+        unset($logger);
+    }
+
+    /**
+     * Test that CRITICAL routes through WP_CLI::error and requests exit.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testHandlerRoutesCriticalToErrorAndExits()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler(self::getHandleObjectForStandardTest());
+
+        try {
+            $logger->critical('Critical failure');
+            $this->fail('Expected critical logging to request exit.');
+        } catch (\MHCGDev\Monolog\Stubs\MockExitException $exception) {
+            $this->assertSame(1, $exception->getCode());
+        }
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(1, $calls);
+        $this->assertSame('error', $calls[0]['method']);
+        $this->assertTrue($calls[0]['exit']);
+        $this->assertStringContainsString('(CRITICAL)', $calls[0]['message']);
+        $this->assertStringContainsString('Critical failure', $calls[0]['message']);
+
+        unset($logger);
+    }
+
+    /**
      * Test that a partial custom logger map is merged over the defaults.
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct

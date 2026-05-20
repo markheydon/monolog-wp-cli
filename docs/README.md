@@ -9,6 +9,7 @@ This documentation is organised using Diataxis so each page has one primary job.
 ## How-to guides
 
 - [Use WPCLIHandler in a command](how-to/use-wpclihandler-in-a-command.md): Complete a focused implementation task.
+- [Test under WordPress and WP-CLI](how-to/test-under-wordpress.md): Run the real-runtime integration smoke workflow locally.
 
 ## Reference
 

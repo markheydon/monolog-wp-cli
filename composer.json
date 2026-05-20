@@ -39,6 +39,15 @@
   "scripts": {
     "test": "vendor/bin/phpunit",
     "test:runtime-smoke": "php tests/runtime-smoke.php",
+    "wp:env:up": "docker compose --project-directory tests/wordpress -f tests/wordpress/docker-compose.yml up -d db wordpress",
+    "wp:env:down": "docker compose --project-directory tests/wordpress -f tests/wordpress/docker-compose.yml down -v",
+    "test:wp:setup": "bash tests/wordpress/bin/setup-wordpress.sh",
+    "test:wp:smoke": "bash tests/wordpress/bin/run-smoke.sh",
+    "test:wp": [
+      "@wp:env:up",
+      "@test:wp:setup",
+      "@test:wp:smoke"
+    ],
     "lint:md": "php -d xdebug.mode=off vendor/bin/phpmd src text codesize,unusedcode",
     "lint:cs": "vendor/bin/phpcs",
     "lint": [
