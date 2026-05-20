@@ -22,6 +22,31 @@ composer require mhcg/monolog-wp-cli
 
 `WPCLIHandler` works like any other Monolog handler. Create the handler and push it onto a logger inside a WP-CLI command context.
 
+### Version note (v2.2)
+
+From v2.2, default `NOTICE` handling changed from `WP_CLI::warning()` to `WP_CLI::log()`.
+
+- Before v2.2: `notice` messages were shown as `Warning:` output.
+- From v2.2: `notice` messages are logged as normal output with `(NOTICE)` level prefix.
+
+If you need previous behaviour, pass a custom logger map override as the fourth `WPCLIHandler` constructor argument:
+
+```php
+$log->pushHandler(
+    new WPCLIHandler(
+        Logger::INFO,
+        true,
+        false,
+        [
+            Logger::NOTICE => [
+                'method' => 'warning',
+                'includeLevelName' => true,
+            ],
+        ]
+    )
+);
+```
+
 ```php
 <?php
 
@@ -107,6 +132,8 @@ Success: Finished running mycommand
 wp mycommand --quiet
 Error: (ERROR) An error has occurred
 ```
+
+For full mapping and override details, see [WPCLIHandler reference](docs/reference/wpclihandler.md).
 
 ## Development
 

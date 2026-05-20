@@ -10,12 +10,31 @@
 ## Constructor
 
 ```php
-new WPCLIHandler($level = Logger::WARNING, $bubble = true, $verbose = false)
+new WPCLIHandler($level = Logger::WARNING, $bubble = true, $verbose = false, ?array $loggerMap = null)
 ```
 
 - `$level`: minimum logging level for handler triggering.
 - `$bubble`: whether records continue to other handlers.
 - `$verbose`: enables verbose formatter output (also enabled by `WP_DEBUG`).
+- `$loggerMap`: optional per-level overrides merged over the default logger map.
+
+When supplied, `$loggerMap` is merged over `getDefaultLoggerMap()` so callers only need to provide the levels they want to change. Invalid overrides are rejected in the constructor.
+
+Each map entry uses this shape:
+
+```php
+[
+	Logger::NOTICE => [
+		'method' => 'log',
+		'includeLevelName' => true,
+	],
+	Logger::ERROR => [
+		'method' => 'error',
+		'includeLevelName' => true,
+		'exit' => false,
+	],
+]
+```
 
 ## Default formatter behaviour
 
@@ -33,7 +52,7 @@ Verbose output is enabled when either:
 | --- | --- | --- | --- |
 | DEBUG | `debug` | no | n/a |
 | INFO | `log` | no | n/a |
-| NOTICE | `warning` | yes | n/a |
+| NOTICE | `log` | yes | n/a |
 | WARNING | `warning` | yes | n/a |
 | ERROR | `error` | yes | false |
 | CRITICAL | `error` | yes | true |
@@ -50,4 +69,5 @@ Verbose output is enabled when either:
 
 - `getDefaultLoggerMap(): array`
 - `getSupportedLevels(array $map): array`
+- `validateAllLoggerMapEntries(array $map): void`
 - `validateLoggerMap(array $map, int $level, string $levelName = '')`

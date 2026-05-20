@@ -1,6 +1,6 @@
 # PSR-3 to WP-CLI Level Mapping
 
-This note records the default level mapping currently implemented by `MHCG\Monolog\Handler\WPCLIHandler::getDefaultLoggerMap()` and reviews whether it matches the intent of PSR-3 and the available WP-CLI output methods.
+This note records the default level mapping implemented by `MHCG\Monolog\Handler\WPCLIHandler::getDefaultLoggerMap()` after the issue `#15` change set, and captures related behaviour for optional mapping overrides.
 
 ## Sources reviewed
 
@@ -19,18 +19,18 @@ This note records the default level mapping currently implemented by `MHCG\Monol
 - `WP_CLI::success()` is not a PSR-3 severity level. It represents successful completion, not a log severity.
 - `WP_CLI::line()` ignores `--quiet`, so it is not a good default target for normal PSR-3 logging.
 
-## Current and recommended mapping
+## Implemented default mapping (v2.2)
 
-| PSR-3 level | PSR-3 intent | Current codebase mapping | Recommended mapping | Notes |
-| --- | --- | --- | --- | --- |
-| `DEBUG` | Detailed debug information | `debug` | `debug` | Good fit. WP-CLI already gates this behind `--debug`, which matches the intent well. |
-| `INFO` | Interesting events | `log` | `log` | Good fit. This is ordinary informational output and should remain suppressible with `--quiet`. |
-| `NOTICE` | Normal but significant events | `warning` + level name | `log` + level name | **Main mismatch.** A notice is not inherently a warning. Mapping it to `warning` changes both the severity and the user-facing prefix. |
-| `WARNING` | Exceptional occurrences that are not errors | `warning` + level name | `warning` + level name | Good fit. WP-CLI warning semantics are close to PSR-3 warning semantics. |
-| `ERROR` | Runtime errors that should be logged and monitored | `error` + level name + `exit=false` | `error` + level name + `exit=false` | Good fit. This preserves the error channel without forcing process termination. |
-| `CRITICAL` | Critical conditions | `error` + level name + `exit=true` | `error` + level name; exit policy is separate | `error` is the closest WP-CLI channel, but the forced exit is a control-flow decision, not a pure level-mapping decision. |
-| `ALERT` | Action must be taken immediately | `error` + level name + `exit=true` | `error` + level name; exit policy is separate | Same caveat as `CRITICAL`. WP-CLI has no dedicated alert channel. |
-| `EMERGENCY` | System is unusable | `error` + level name + `exit=true` | `error` + level name; exit policy is separate | Same caveat as `CRITICAL`. `error` is the closest available channel. |
+| PSR-3 level | PSR-3 intent | Implemented mapping | Notes |
+| --- | --- | --- | --- |
+| `DEBUG` | Detailed debug information | `debug` | Strong fit. Visibility remains controlled by `--debug`. |
+| `INFO` | Interesting events | `log` | Strong fit. Suppressed by `--quiet`. |
+| `NOTICE` | Normal but significant events | `log` + level name | Updated for issue `#15`. Avoids over-reporting as warning while preserving distinction from INFO. |
+| `WARNING` | Exceptional occurrences that are not errors | `warning` + level name | Strong fit. |
+| `ERROR` | Runtime errors that should be logged and monitored | `error` + level name + `exit=false` | Preserves error channel without forced exit. |
+| `CRITICAL` | Critical conditions | `error` + level name + `exit=true` | `error` is the closest channel; `exit=true` is handler policy. |
+| `ALERT` | Action must be taken immediately | `error` + level name + `exit=true` | Same policy caveat as CRITICAL. |
+| `EMERGENCY` | System is unusable | `error` + level name + `exit=true` | Same policy caveat as CRITICAL. |
 
 ## Review of the current strategy
 
@@ -43,18 +43,21 @@ This note records the default level mapping currently implemented by `MHCG\Monol
 - Mapping `CRITICAL`, `ALERT`, and `EMERGENCY` to `error` is reasonable because WP-CLI does not provide higher-severity output methods.
 - Including the PSR-3 level name once multiple PSR-3 levels share the same WP-CLI method is useful and should stay.
 
-### What does not align cleanly
+### What was changed
 
-- `NOTICE -> warning` does **not** align with the spirit of PSR-3. A notice is “normal but significant”, while `WP_CLI::warning()` is explicitly for warning conditions. The current mapping overstates severity and can make routine-but-notable events look like problems.
+- `NOTICE` now maps to `log` instead of `warning`.
+- `includeLevelName` remains enabled for `NOTICE`.
+- Override support was added to `WPCLIHandler` constructor via optional logger-map input, merged over defaults.
+- Override entries are validated in constructor so invalid mappings fail early.
 
 ### Important ambiguity
 
 - `exit=true` for `CRITICAL`, `ALERT`, and `EMERGENCY` may be a sensible package default for CLI commands, but it is better described as a **handler policy** than as part of the PSR-3-to-WP-CLI level mapping itself.
 - In other words: `CRITICAL+ -> error` is the level mapping; “should this log call terminate the command?” is a second decision layered on top.
 
-## Recommended default strategy for future code changes
+## Current default map snapshot
 
-If the goal is to align the default mapping more closely with PSR-3 while staying idiomatic for WP-CLI, the default should be:
+The current default map is:
 
 ```php
 [
@@ -69,11 +72,20 @@ If the goal is to align the default mapping more closely with PSR-3 while stayin
 ]
 ```
 
-If backwards compatibility requires keeping `exit=true` for `CRITICAL` and above, that should be documented as an opinionated default rather than as the only semantically correct mapping.
+## Backwards compatibility path
 
-## Takeaways for issue #15
+Consumers that relied on legacy `NOTICE -> warning` behaviour can restore it by passing a partial override map to `WPCLIHandler`.
 
-- The strongest documented mismatch is `NOTICE -> warning`.
-- Changing `NOTICE` to `log` is consistent with both PSR-3 semantics and WP-CLI output intent.
-- `includeLevelName` should still be kept for `NOTICE` so it remains distinguishable from `INFO`.
-- If issue `#15` also revisits `exit=true` for `CRITICAL+`, treat that as a separate design discussion from the `NOTICE` mapping fix.
+```php
+[
+    Logger::NOTICE => ['method' => 'warning', 'includeLevelName' => true],
+]
+```
+
+This override is merged with the defaults; consumers do not need to re-declare every level mapping.
+
+## Status for issue #15
+
+- `NOTICE` mismatch is resolved in code and tests.
+- Optional override support is available for consumers who want custom mappings.
+- `CRITICAL+` exit policy remains unchanged and should continue to be treated as handler policy rather than pure level mapping semantics.

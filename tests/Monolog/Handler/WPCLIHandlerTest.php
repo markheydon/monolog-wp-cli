@@ -140,6 +140,78 @@ class WPCLIHandlerTest extends TestCase
     }
 
     /**
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct
+     */
+    public function testConstructorInWPCLIWithLoggerMapOverride()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        $var = new WPCLIHandler(
+            Logger::DEBUG,
+            true,
+            false,
+            [
+                Logger::NOTICE => [
+                    'method' => 'warning',
+                    'includeLevelName' => true,
+                ],
+            ]
+        );
+        $this->assertTrue(is_object($var));
+        $this->isInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler');
+        unset($var);
+    }
+
+    /**
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct
+     */
+    public function testConstructorRejectsInvalidLoggerMapMethod()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('invalid method');
+
+        new WPCLIHandler(
+            Logger::DEBUG,
+            true,
+            false,
+            [
+                Logger::NOTICE => [
+                    'method' => 'method_does_not_exist',
+                ],
+            ]
+        );
+    }
+
+    /**
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct
+     */
+    public function testConstructorRejectsInvalidLoggerMapExit()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('specifies exit');
+
+        new WPCLIHandler(
+            Logger::DEBUG,
+            true,
+            false,
+            [
+                Logger::NOTICE => [
+                    'method' => 'log',
+                    'includeLevelName' => true,
+                    'exit' => true,
+                ],
+            ]
+        );
+    }
+
+    /**
      * Tests the formatter is different between standard and verbose
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::getFormatter
@@ -209,6 +281,17 @@ class WPCLIHandlerTest extends TestCase
             WPCLIHandler::validateLoggerMap($defaultMap, $level, $levelName);
             $this->assertTrue(true);
         }
+    }
+
+    /**
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::getDefaultLoggerMap
+     */
+    public function testDefaultMapUsesLogForNotice()
+    {
+        $defaultMap = WPCLIHandler::getDefaultLoggerMap();
+
+        $this->assertSame('log', $defaultMap[Logger::NOTICE]['method']);
+        $this->assertTrue($defaultMap[Logger::NOTICE]['includeLevelName']);
     }
 
     /**
@@ -283,6 +366,16 @@ class WPCLIHandlerTest extends TestCase
             Logger::DEBUG,
             Logger::getLevelName(Logger::DEBUG)
         );
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::validateAllLoggerMapEntries
+     */
+    public function testValidateAllLoggerMapEntriesAcceptsDefaultMap()
+    {
+        WPCLIHandler::validateAllLoggerMapEntries(WPCLIHandler::getDefaultLoggerMap());
+
         $this->assertTrue(true);
     }
     //</editor-fold>
@@ -606,6 +699,74 @@ class WPCLIHandlerTest extends TestCase
             'General logging - will not be shown when running wp with --quiet',
             implode(' ', array_column($calls, 'message'))
         );
+    }
+
+    /**
+     * Test that NOTICE now routes through WP_CLI::log by default.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testHandlerRoutesNoticeToLogByDefault()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler(self::getHandleObjectForStandardTest());
+        $logger->notice('Something normal but significant happened');
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(1, $calls);
+        $this->assertSame('log', $calls[0]['method']);
+        $this->assertStringContainsString('(NOTICE)', $calls[0]['message']);
+        $this->assertStringContainsString('Something normal but significant happened', $calls[0]['message']);
+
+        unset($logger);
+    }
+
+    /**
+     * Test that a partial custom logger map is merged over the defaults.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testHandlerMergesPartialCustomLoggerMap()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler(
+            new WPCLIHandler(
+                Logger::DEBUG,
+                true,
+                false,
+                [
+                    Logger::INFO => [
+                        'method' => 'debug',
+                        'includeLevelName' => true,
+                    ],
+                ]
+            )
+        );
+
+        $logger->info('Custom info mapping');
+        $logger->notice('Default notice mapping remains');
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(2, $calls);
+        $this->assertSame('debug', $calls[0]['method']);
+        $this->assertStringContainsString('(INFO)', $calls[0]['message']);
+        $this->assertSame('log', $calls[1]['method']);
+        $this->assertStringContainsString('(NOTICE)', $calls[1]['message']);
+
+        unset($logger);
     }
 
     /**

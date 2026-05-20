@@ -30,19 +30,37 @@ function mycommand_command( $args ) {
 WP_CLI::add_command( 'mycommand', 'mycommand_command' );
 ```
 
-3. Run the command normally:
+3. Optional: if you need pre-v2.2 `NOTICE` behaviour (`warning` output), pass a logger-map override:
+
+```php
+$logger->pushHandler(
+    new WPCLIHandler(
+        Logger::INFO,
+        true,
+        false,
+        [
+            Logger::NOTICE => [
+                'method' => 'warning',
+                'includeLevelName' => true,
+            ],
+        ]
+    )
+);
+```
+
+4. Run the command normally:
 
 ```shell
 wp mycommand
 ```
 
-4. Optional: run with debug visibility:
+5. Optional: run with debug visibility:
 
 ```shell
 wp mycommand --debug
 ```
 
-5. Optional: run in quiet mode:
+6. Optional: run in quiet mode:
 
 ```shell
 wp mycommand --quiet
@@ -52,4 +70,5 @@ wp mycommand --quiet
 
 - The handler is intended for WP-CLI runtime. Constructing it outside WP-CLI raises a runtime exception.
 - `debug` messages rely on WP-CLI debug mode.
+- From v2.2, `notice` maps to `WP_CLI::log()` by default.
 - Error-level output is sent through WP-CLI error handling.

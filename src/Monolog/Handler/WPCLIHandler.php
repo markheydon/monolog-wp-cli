@@ -38,8 +38,9 @@ class WPCLIHandler extends AbstractProcessingHandler
      * @param int $level The minimum logging level at which this handler will be triggered
      * @param bool $bubble Whether the messages that are handled can bubble up the stack or not
      * @param bool $verbose Will use this or WP_DEBUG to include extra information in logging messages
+     * @param array|null $loggerMap Optional logger map overrides merged over the defaults
      */
-    public function __construct($level = Logger::WARNING, $bubble = true, $verbose = false)
+    public function __construct($level = Logger::WARNING, $bubble = true, $verbose = false, ?array $loggerMap = null)
     {
         $isInCLI = (defined('WP_CLI') && WP_CLI);
         if (!$isInCLI) {
@@ -50,6 +51,11 @@ class WPCLIHandler extends AbstractProcessingHandler
 
         $verbose = (defined('WP_DEBUG') ? WP_DEBUG : false) || $verbose;
         $this->verbose = $verbose;
+
+        if ($loggerMap !== null) {
+            $this->loggerMap = array_replace(self::getDefaultLoggerMap(), $loggerMap);
+            self::validateAllLoggerMapEntries($this->loggerMap);
+        }
     }
 
     /**
@@ -169,6 +175,22 @@ class WPCLIHandler extends AbstractProcessingHandler
     }
 
     /**
+     * Validates every entry in a logger map.
+     *
+     * @param array $map The logger map to validate.
+     *
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    public static function validateAllLoggerMapEntries(array $map): void
+    {
+        foreach ($map as $level => $entry) {
+            unset($entry);
+            self::validateLoggerMap($map, (int)$level, Logger::getLevelName($level));
+        }
+    }
+
+    /**
      * Returns the Logger map.
      *
      * @return array Logger map/
@@ -197,7 +219,7 @@ class WPCLIHandler extends AbstractProcessingHandler
                 'method' => 'log',
             ],
             Logger::NOTICE => [
-                'method' => 'warning',
+                'method' => 'log',
                 'includeLevelName' => true,
             ],
             Logger::WARNING => [
