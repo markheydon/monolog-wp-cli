@@ -1,0 +1,19 @@
+{
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "version": "1.10.0",
+      "resolved": "ghcr.io/devcontainers/features/docker-outside-of-docker@sha256:c2c2cf829505ead8e4892c88c31b6594ae94a2bbb209e16e1fac456c1a3a624e",
+      "integrity": "sha256:c2c2cf829505ead8e4892c88c31b6594ae94a2bbb209e16e1fac456c1a3a624e"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "1.1.0",
+      "resolved": "ghcr.io/devcontainers/features/github-cli@sha256:d22f50b70ed75339b4eed1ba9ecde3a1791f90e88d37936517e3bace0bbad671",
+      "integrity": "sha256:d22f50b70ed75339b4eed1ba9ecde3a1791f90e88d37936517e3bace0bbad671"
+    },
+    "ghcr.io/markheydon/devcontainer-features/copilot-likes:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/markheydon/devcontainer-features/copilot-likes@sha256:00707d0886649a89871d031af818e13962b46787a2dc62507d4036edf6d114a7",
+      "integrity": "sha256:00707d0886649a89871d031af818e13962b46787a2dc62507d4036edf6d114a7"
+    }
+  }
+}

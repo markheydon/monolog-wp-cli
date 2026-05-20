@@ -22,6 +22,31 @@ composer require mhcg/monolog-wp-cli
 
 `WPCLIHandler` works like any other Monolog handler. Create the handler and push it onto a logger inside a WP-CLI command context.
 
+### Version note (v2.2)
+
+From v2.2, default `NOTICE` handling changed from `WP_CLI::warning()` to `WP_CLI::log()`.
+
+- Before v2.2: `notice` messages were shown as `Warning:` output.
+- From v2.2: `notice` messages are logged as normal output with `(NOTICE)` level prefix.
+
+If you need previous behaviour, pass a custom logger map override as the fourth `WPCLIHandler` constructor argument:
+
+```php
+$log->pushHandler(
+    new WPCLIHandler(
+        Logger::INFO,
+        true,
+        false,
+        [
+            Logger::NOTICE => [
+                'method' => 'warning',
+                'includeLevelName' => true,
+            ],
+        ]
+    )
+);
+```
+
 ```php
 <?php
 
@@ -108,6 +133,8 @@ wp mycommand --quiet
 Error: (ERROR) An error has occurred
 ```
 
+For full mapping and override details, see [WPCLIHandler reference](docs/reference/wpclihandler.md).
+
 ## Development
 
 Install dependencies:
@@ -121,11 +148,35 @@ Run local checks:
 ```shell
 composer run test
 composer run test:runtime-smoke
+composer run test:wp
 composer run lint
 composer run qa
 ```
 
-CI runs on pull requests and pushes to main, validates Composer metadata, runs runtime compatibility smoke checks on PHP 7.2 through 8.4, runs PHPUnit unit tests on PHP 7.2 through 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3.
+Composer script quick reference:
+
+- `test`: run PHPUnit tests.
+- `test:runtime-smoke`: run fast runtime contract smoke checks.
+- `wp:env:up`: start local WordPress integration containers.
+- `test:wp:setup`: bootstrap WordPress and activate fixture plugin.
+- `test:wp:smoke`: run WP-CLI integration smoke checks.
+- `test:wp`: run `wp:env:up`, `test:wp:setup`, and `test:wp:smoke`.
+- `wp:env:down`: stop integration containers and remove volumes.
+- `lint`: run PHPMD and PHPCS.
+- `qa`: run PHPUnit plus lint checks.
+
+Run WordPress integration checks step-by-step:
+
+```shell
+composer run wp:env:up
+composer run test:wp:setup
+composer run test:wp:smoke
+composer run wp:env:down
+```
+
+Note: `composer run test:wp` does not call `wp:env:down`; run teardown explicitly when you are finished.
+
+CI runs on pull requests and pushes to main. The PHP workflow validates Composer metadata, runs runtime compatibility smoke checks on PHP 7.2 through 8.4, runs PHPUnit unit tests on PHP 7.2 through 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3. A separate WordPress integration workflow provisions WordPress with WP-CLI and runs the integration smoke checks.
 
 ## Testing and code quality
 

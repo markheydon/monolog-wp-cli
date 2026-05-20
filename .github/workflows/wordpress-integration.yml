@@ -1,0 +1,48 @@
+name: WordPress Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wp-integration-smoke:
+    name: WordPress + WP-CLI smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+          coverage: none
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Start WordPress test environment
+        run: composer run wp:env:up
+
+      - name: Setup WordPress for smoke fixture
+        run: composer run test:wp:setup
+
+      - name: Run WordPress integration smoke
+        run: composer run test:wp:smoke
+
+      - name: Stop WordPress test environment
+        if: always()
+        run: composer run wp:env:down || true

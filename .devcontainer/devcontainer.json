@@ -2,11 +2,15 @@
 // https://containers.dev/implementors/json_reference/
 {
 	"name": "Monolog-WP-CLI",
-	"image": "mcr.microsoft.com/devcontainers/php:1-8.3",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {
 			"version": "2"
-		}
+		},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/markheydon/devcontainer-features/copilot-likes:1": {}
 	},
 	"postCreateCommand": "composer install --prefer-dist --no-progress --no-interaction",
 	"containerEnv": {

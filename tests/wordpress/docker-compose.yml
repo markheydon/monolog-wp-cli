@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mariadb:10.6
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:6.5-php8.2-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    ports:
+      - "8080:80"
+    volumes:
+      - wordpress_data:/var/www/html
+      - project_data:/workspaces/monolog-wp-cli
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    depends_on:
+      wordpress:
+        condition: service_started
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    working_dir: /var/www/html
+    volumes:
+      - wordpress_data:/var/www/html
+      - project_data:/workspaces/monolog-wp-cli
+
+volumes:
+  db_data:
+  wordpress_data:
+  project_data:
