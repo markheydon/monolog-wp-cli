@@ -18,6 +18,8 @@ composer require mhcg/monolog-wp-cli
 
 Current stable releases target the Monolog 2 line. Monolog 3 support remains planned for a future major release.
 
+Official WordPress-runtime support is maintained separately from the package runtime floor. The current policy supports the current and previous WordPress major series through an explicit smoke-test tuple list rather than a blanket WordPress/PHP cross-product claim.
+
 ## Usage
 
 `WPCLIHandler` works like any other Monolog handler. Create the handler and push it onto a logger inside a WP-CLI command context.
@@ -173,10 +175,19 @@ composer run wp:env:down
 
 Note: `composer run test:wp` does not call `wp:env:down`; run teardown explicitly when you are finished.
 
+The local WordPress smoke workflow defaults to the repository's current baseline tuple. To run a different supported tuple, set `WORDPRESS_VERSION` and `WORDPRESS_PHP_VERSION` before running the WordPress scripts.
+
+Example:
+
+```shell
+WORDPRESS_VERSION=6.8 WORDPRESS_PHP_VERSION=8.4 composer run test:wp
+```
+
 CI runs on pull requests and pushes to `main`.
 
-- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 7.2 to 8.4, runs unit tests across PHP 7.2 to 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3.
-- `WordPress Integration` provisions WordPress with WP-CLI and runs the integration smoke checks.
+- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 7.2 to 8.5, runs unit tests across PHP 7.2 to 8.5 using a compatible PHPUnit line per PHP version, runs dependency audit, PHPMD, and PHPCS on PHP 8.3, and runs a dedicated WordPress smoke matrix for the repository's officially supported WordPress/PHP tuples.
+
+For the reasoning behind the support window and tuple-based WordPress policy, see [Compatibility and release-line policy](docs/explanation/compatibility-and-release-line-policy.md).
 
 ## Testing and code quality
 
