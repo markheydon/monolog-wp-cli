@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
 
     name: Runtime PHP ${{ matrix.php-version }}
 
@@ -76,6 +76,9 @@ jobs:
           - os: ubuntu-latest
             php-version: '8.4'
             phpunit-version: '^12.5'
+          - os: ubuntu-latest
+            php-version: '8.5'
+            phpunit-version: '^12.5'
 
     name: Unit PHP ${{ matrix.php-version }}
 
@@ -126,3 +129,61 @@ jobs:
 
       - name: Run PHPCS
         run: composer run lint:cs
+
+  wordpress-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - wordpress-version: '7.0'
+            php-version: '8.4'
+          - wordpress-version: '7.0'
+            php-version: '8.5'
+          - wordpress-version: '6.8'
+            php-version: '8.3'
+          - wordpress-version: '6.8'
+            php-version: '8.4'
+
+    name: WordPress ${{ matrix.wordpress-version }} PHP ${{ matrix.php-version }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+          coverage: none
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install runtime dependencies
+        run: composer update --prefer-dist --no-progress --no-interaction --no-dev
+
+      - name: Start WordPress environment
+        env:
+          WORDPRESS_VERSION: ${{ matrix.wordpress-version }}
+          WORDPRESS_PHP_VERSION: ${{ matrix.php-version }}
+        run: composer run wp:env:up
+
+      - name: Set up WordPress smoke fixture
+        env:
+          WORDPRESS_VERSION: ${{ matrix.wordpress-version }}
+          WORDPRESS_PHP_VERSION: ${{ matrix.php-version }}
+        run: composer run test:wp:setup
+
+      - name: Run WordPress smoke checks
+        env:
+          WORDPRESS_VERSION: ${{ matrix.wordpress-version }}
+          WORDPRESS_PHP_VERSION: ${{ matrix.php-version }}
+        run: composer run test:wp:smoke
+
+      - name: Tear down WordPress environment
+        if: always()
+        env:
+          WORDPRESS_VERSION: ${{ matrix.wordpress-version }}
+          WORDPRESS_PHP_VERSION: ${{ matrix.php-version }}
+        run: composer run wp:env:down

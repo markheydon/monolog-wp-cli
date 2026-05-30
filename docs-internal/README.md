@@ -13,6 +13,7 @@ Keep entries concise and factual. Prefer one file per topic.
 
 - [Package identity and naming](package-identity.md)
 - [PHP version strategy](php-version-strategy.md)
+- [WordPress runtime support policy](wordpress-support-policy.md)
 - [PSR-3 to WP-CLI Level Mapping](psr3-to-wp-cli-level-mapping.md)
 - [Repository transfer and Packagist behaviour](repository-transfer-and-packagist.md)
 - [README and badge policy](readme-and-badges.md)

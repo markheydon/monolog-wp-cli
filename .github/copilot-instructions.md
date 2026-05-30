@@ -16,6 +16,7 @@ When writing or updating code or documentation, prioritise these files:
 - `docs-internal/readme-and-badges.md` for README and badge policy.
 - `docs-internal/package-identity.md` for package naming policy.
 - `docs-internal/php-version-strategy.md` for PHP/Monolog compatibility policy.
+- `docs-internal/wordpress-support-policy.md` for WordPress-runtime support policy and smoke-test tuples.
 
 Do not invent behaviour, compatibility claims, or roadmap commitments that are not supported by repository files.
 
@@ -41,7 +42,15 @@ Do not invent behaviour, compatibility claims, or roadmap commitments that are n
 - Keep each public doc page clearly anchored to one primary Diataxis type.
 - Use `.github/skills/documentation-writer/SKILL.md` as the primary Diataxis guidance for content in `docs/`.
 - Use `.github/skills/repo-readme-generator/SKILL.md` for `README.md` updates only; do not treat it as a generator for `docs/` pages.
+- Keep package runtime compatibility wording separate from WordPress-runtime support wording.
 - For WordPress-facing code snippets in `README.md` and `docs/`, use WordPress Coding Standards style (for example spacing, control-structure formatting, and WordPress naming conventions where relevant).
+
+## Support Governance Workflows
+
+- Use `.github/skills/support-governance/SKILL.md` as the shared operating guide when maintaining version-support policy or checking support-to-testing alignment.
+- Use the `maintain-version-policy` workflow when upstream WordPress or PHP support windows have moved, or when policy/source-of-truth docs need refreshing.
+- Use the `check-support-test-alignment` workflow when test scripts, Docker tuples, Composer scripts, CI jobs, or documentation may have drifted away from the documented policy.
+- Keep the workflow files thin and let the shared skill hold the detailed operating rules.
 
 ## Change Discipline
 

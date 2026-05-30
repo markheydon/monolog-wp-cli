@@ -15,7 +15,7 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
-    image: wordpress:6.5-php8.2-apache
+    image: wordpress:${WORDPRESS_VERSION:-7.0}-php${WORDPRESS_PHP_VERSION:-8.4}-apache
     depends_on:
       db:
         condition: service_healthy
@@ -25,13 +25,13 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
     ports:
-      - "8080:80"
+      - "${WORDPRESS_HTTP_PORT:-8080}:80"
     volumes:
       - wordpress_data:/var/www/html
       - project_data:/workspaces/monolog-wp-cli
 
   wpcli:
-    image: wordpress:cli-php8.2
+    image: wordpress:cli-php${WORDPRESS_PHP_VERSION:-8.4}
     depends_on:
       wordpress:
         condition: service_started

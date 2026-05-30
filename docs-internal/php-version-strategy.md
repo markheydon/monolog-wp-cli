@@ -4,6 +4,7 @@
 
 - Set runtime PHP support by the Monolog major targeted by the release line.
 - Do not raise `composer.json` `require -> php` only because maintainer tooling runs on newer PHP.
+- Keep WordPress-runtime support as a separate policy layer from package runtime compatibility.
 - If this package must require a higher PHP minimum than the targeted Monolog line, treat it as an explicit breaking policy decision and document why.
 
 ## Purpose
@@ -14,7 +15,15 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 
 - Monolog major compatibility is the primary driver of runtime PHP support.
 - `composer.json` `require -> php` reflects consumer runtime support, not maintainer workstation defaults.
+- WordPress-runtime support must be evaluated separately because upstream WordPress and official Docker images move on a different cadence from the package runtime floor.
 - Raising minimum PHP beyond the targeted Monolog floor is a breaking policy decision and must be justified in release notes.
+
+## Relationship to WordPress-runtime policy
+
+- This document governs package runtime compatibility for the release line.
+- WordPress-runtime support is governed by `docs-internal/wordpress-support-policy.md`.
+- Do not treat successful Composer installation alone as proof that a WordPress/PHP combination is officially supported.
+- Official WordPress-runtime support requires explicit policy inclusion and matching smoke-test coverage.
 
 ## Decision rules (apply in order)
 
@@ -84,6 +93,7 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 - Which Monolog major does this release line target?
 - Does `require -> php` match that Monolog major's minimum policy?
 - If stricter, is the reason explicit, valid, and documented?
+- Is any WordPress-runtime support statement kept separate from package runtime compatibility?
 - Is the change breaking, and is release versioning aligned?
 - Does CI distinguish runtime minimum validation from tooling convenience jobs?
 - Are migration notes and branch/support expectations clear to consumers?

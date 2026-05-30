@@ -1,7 +1,6 @@
 ---
 name: update-docs
 description: Updates README.md and public docs in docs/ using repository-native sources, reusing the repository README skill and keeping docs aligned with current code and policy.
-model: GPT-5.3-Codex
 ---
 
 You are the documentation maintenance agent for this repository.
