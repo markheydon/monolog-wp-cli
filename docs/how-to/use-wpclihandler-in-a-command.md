@@ -70,5 +70,6 @@ wp mycommand --quiet
 
 - The handler is intended for WP-CLI runtime. Constructing it outside WP-CLI raises a runtime exception.
 - `debug` messages rely on WP-CLI debug mode.
+- Monolog `context` and `extra` data are only shown when the handler is in verbose mode, either via the constructor flag or `WP_DEBUG`.
 - From v2.2, `notice` maps to `WP_CLI::log()` by default.
 - Error-level output is sent through WP-CLI error handling.

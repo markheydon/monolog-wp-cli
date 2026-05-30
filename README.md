@@ -22,6 +22,8 @@ composer require mhcg/monolog-wp-cli
 
 `WPCLIHandler` works like any other Monolog handler. Create the handler and push it onto a logger inside a WP-CLI command context.
 
+By default the handler uses message-only output. Monolog `context` and `extra` data are only rendered when verbose formatting is enabled, either by passing `true` as the third `WPCLIHandler` constructor argument or when `WP_DEBUG` is enabled.
+
 ### Version note (v2.2)
 
 From v2.2, default `NOTICE` handling changed from `WP_CLI::warning()` to `WP_CLI::log()`.
@@ -63,6 +65,13 @@ $log->error('An error has occurred');
 $log->critical('This will report error and exit out');
 $log->debug('Only shown when running wp with --debug');
 $log->info('General logging - will not be shown when running wp with --quiet');
+```
+
+If you want Monolog `context` and `extra` data included in the output, enable verbose formatting:
+
+```php
+$log->pushHandler(new WPCLIHandler(Logger::WARNING, true, true));
+$log->warning('This includes context in verbose mode', ['job' => 'import']);
 ```
 
 ### WordPress plugin-style example

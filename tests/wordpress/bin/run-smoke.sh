@@ -48,4 +48,7 @@ fi
 DEBUG_OUTPUT="$("${WP[@]}" --debug monolog-smoke --level=debug --message='debug from wp' 2>&1)"
 assert_contains "debug from wp" "$DEBUG_OUTPUT" "DEBUG output should be visible with --debug."
 
+VERBOSE_CONTEXT_OUTPUT="$(${WP[@]} monolog-smoke --level=notice --message='context from wp' --handler-verbose=1 --context-key=foo --context-value=bar 2>&1)"
+assert_contains '(NOTICE) context from wp {"foo":"bar"} []' "$VERBOSE_CONTEXT_OUTPUT" "Verbose handler output should include serialized context data."
+
 echo "wp-smoke-ok"

@@ -41,6 +41,8 @@ Each map entry uses this shape:
 - Standard format: `%message%`
 - Verbose format: `%message% %context% %extra%`
 
+That means Monolog `context` and `extra` data are not shown in standard output. They are only rendered when verbose output is enabled.
+
 Verbose output is enabled when either:
 
 - `WP_DEBUG` is enabled, or
