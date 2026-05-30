@@ -41,10 +41,20 @@ Each map entry uses this shape:
 - Standard format: `%message%`
 - Verbose format: `%message% %context% %extra%`
 
+That means Monolog `context` and `extra` data are not shown in standard output. They are only rendered when verbose output is enabled.
+
 Verbose output is enabled when either:
 
 - `WP_DEBUG` is enabled, or
 - constructor `$verbose` is `true`
+
+Example verbose output from the WordPress integration smoke fixture:
+
+```text
+(NOTICE) context from wp {"foo":"bar"} []
+```
+
+In this output shape, the trailing `[]` is Monolog `extra` data when no extra keys are present.
 
 ## Default Monolog-to-WP-CLI mapping
 

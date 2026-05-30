@@ -23,28 +23,38 @@ if (!class_exists('MHCG\\Monolog\\Handler\\WPCLIHandler')) {
 WP_CLI::add_command('monolog-smoke', static function (array $args, array $assocArgs): void {
     $level = isset($assocArgs['level']) ? (string) $assocArgs['level'] : 'notice';
     $message = isset($assocArgs['message']) ? (string) $assocArgs['message'] : 'smoke';
+    $handlerVerbose = !empty($assocArgs['handler-verbose']);
+    $context = [];
+
+    if (isset($assocArgs['context-key'])) {
+        $context[(string) $assocArgs['context-key']] = isset($assocArgs['context-value'])
+            ? (string) $assocArgs['context-value']
+            : '';
+    }
 
     $logger = new \Monolog\Logger('monolog-smoke');
-    $logger->pushHandler(new \MHCG\Monolog\Handler\WPCLIHandler(\Monolog\Logger::DEBUG));
+    $logger->pushHandler(
+        new \MHCG\Monolog\Handler\WPCLIHandler(\Monolog\Logger::DEBUG, true, $handlerVerbose)
+    );
 
     switch ($level) {
         case 'debug':
-            $logger->debug($message);
+            $logger->debug($message, $context);
             break;
         case 'info':
-            $logger->info($message);
+            $logger->info($message, $context);
             break;
         case 'notice':
-            $logger->notice($message);
+            $logger->notice($message, $context);
             break;
         case 'warning':
-            $logger->warning($message);
+            $logger->warning($message, $context);
             break;
         case 'error':
-            $logger->error($message);
+            $logger->error($message, $context);
             break;
         case 'critical':
-            $logger->critical($message);
+            $logger->critical($message, $context);
             break;
         default:
             WP_CLI::error('Unsupported level: ' . $level, 2);

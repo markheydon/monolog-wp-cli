@@ -48,19 +48,28 @@ $logger->pushHandler(
 );
 ```
 
-4. Run the command normally:
+4. Optional: if you want Monolog `context` and `extra` data in output, enable verbose mode:
+
+```php
+$logger->pushHandler( new WPCLIHandler( Logger::INFO, true, true ) );
+$logger->notice( 'Processed batch', [ 'batch' => 12 ] );
+```
+
+You can also enable the same formatter behaviour through `WP_DEBUG`.
+
+5. Run the command normally:
 
 ```shell
 wp mycommand
 ```
 
-5. Optional: run with debug visibility:
+6. Optional: run with debug visibility:
 
 ```shell
 wp mycommand --debug
 ```
 
-6. Optional: run in quiet mode:
+7. Optional: run in quiet mode:
 
 ```shell
 wp mycommand --quiet
@@ -70,5 +79,6 @@ wp mycommand --quiet
 
 - The handler is intended for WP-CLI runtime. Constructing it outside WP-CLI raises a runtime exception.
 - `debug` messages rely on WP-CLI debug mode.
+- Monolog `context` and `extra` data are only shown when the handler is in verbose mode, either via the constructor flag or `WP_DEBUG`.
 - From v2.2, `notice` maps to `WP_CLI::log()` by default.
 - Error-level output is sent through WP-CLI error handling.

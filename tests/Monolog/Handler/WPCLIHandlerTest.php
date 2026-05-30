@@ -212,32 +212,79 @@ class WPCLIHandlerTest extends TestCase
     }
 
     /**
-     * Tests the formatter is different between standard and verbose
+     * Tests standard formatter keeps output to the message only.
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::getFormatter
      */
-    public function testFormatterDifferent()
+    public function testStandardFormatterOutputsMessageOnly()
     {
         $this->sanityCheck();
 
         $this->pretendToBeInWPCLI();
         $standard = new WPCLIHandler(Logger::DEBUG, true, false);
+        $testRecord = array(
+            'message' => 'This is a message',
+            'context' => array('whatever' => 'something'),
+            'extra' => array('whatever2' => 'something else'),
+        );
+
+        $testStandard = $standard->getFormatter()->format($testRecord);
+
+        $this->assertSame('This is a message', trim($testStandard));
+    }
+
+    /**
+     * Tests verbose formatter includes serialized context and extra data.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::getFormatter
+     */
+    public function testVerboseFormatterIncludesContextAndExtra()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
         $verbose = new WPCLIHandler(Logger::DEBUG, true, true);
         $testRecord = array(
             'message' => 'This is a message',
             'context' => array('whatever' => 'something'),
-            'extra' => array('whatever2' => 'someting else')
+            'extra' => array('whatever2' => 'something else'),
         );
 
-        $testStandard = $standard->getFormatter()->format($testRecord);
         $testVerbose = $verbose->getFormatter()->format($testRecord);
 
-        // test there is something in both
-        $this->assertTrue(strlen($testStandard) > 1);
-        $this->assertTrue(strlen($testVerbose) > 1);
+        $this->assertSame(
+            'This is a message {"whatever":"something"} {"whatever2":"something else"}',
+            trim($testVerbose)
+        );
+    }
 
-        // then test they are different (which they should be)
-        $this->assertNotEquals($testStandard, $testVerbose);
+    /**
+     * Tests WP_DEBUG enables verbose formatter output even when constructor verbose is false.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::getFormatter
+     * @runInSeparateProcess
+     */
+    public function testWpDebugEnablesVerboseFormatterOutput()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        define('WP_DEBUG', true);
+
+        $handler = new WPCLIHandler(Logger::DEBUG, true, false);
+        $testRecord = array(
+            'message' => 'This is a message',
+            'context' => array('whatever' => 'something'),
+            'extra' => array('whatever2' => 'something else'),
+        );
+
+        $formatted = $handler->getFormatter()->format($testRecord);
+
+        $this->assertSame(
+            'This is a message {"whatever":"something"} {"whatever2":"something else"}',
+            trim($formatted)
+        );
     }
 
     //</editor-fold>
