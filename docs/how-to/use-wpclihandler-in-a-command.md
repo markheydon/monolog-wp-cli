@@ -48,19 +48,28 @@ $logger->pushHandler(
 );
 ```
 
-4. Run the command normally:
+4. Optional: if you want Monolog `context` and `extra` data in output, enable verbose mode:
+
+```php
+$logger->pushHandler( new WPCLIHandler( Logger::INFO, true, true ) );
+$logger->notice( 'Processed batch', [ 'batch' => 12 ] );
+```
+
+You can also enable the same formatter behaviour through `WP_DEBUG`.
+
+5. Run the command normally:
 
 ```shell
 wp mycommand
 ```
 
-5. Optional: run with debug visibility:
+6. Optional: run with debug visibility:
 
 ```shell
 wp mycommand --debug
 ```
 
-6. Optional: run in quiet mode:
+7. Optional: run in quiet mode:
 
 ```shell
 wp mycommand --quiet

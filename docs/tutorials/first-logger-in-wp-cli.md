@@ -63,6 +63,17 @@ Expected behaviour:
 - Normal output is suppressed.
 - Error output still appears.
 
+## 5. Enable context output when needed
+
+By default, output uses message-only formatting. To include Monolog `context` and `extra` data, enable verbose mode:
+
+```php
+$log->pushHandler( new WPCLIHandler( Logger::INFO, true, true ) );
+$log->notice( 'Import completed', [ 'items' => 5 ] );
+```
+
+You can also enable verbose output by setting `WP_DEBUG` to true in the runtime.
+
 ## Next step
 
 If you already have an existing command and only need integration steps, continue with the [how-to guide](../how-to/use-wpclihandler-in-a-command.md).

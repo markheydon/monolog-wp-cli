@@ -5,18 +5,18 @@
 
 Extension for [Monolog](https://github.com/Seldaek/monolog) that routes log output through WP-CLI when running `wp` commands.
 
+## Installation
+
+```shell
+composer require mhcg/monolog-wp-cli
+```
+
 ## Requirements
 
 - PHP `^7.2 || ^8.0`
 - monolog/monolog `^2.5`
 
 Current stable releases target the Monolog 2 line. Monolog 3 support remains planned for a future major release.
-
-## Installation
-
-```shell
-composer require mhcg/monolog-wp-cli
-```
 
 ## Usage
 
@@ -162,18 +162,6 @@ composer run lint
 composer run qa
 ```
 
-Composer script quick reference:
-
-- `test`: run PHPUnit tests.
-- `test:runtime-smoke`: run fast runtime contract smoke checks.
-- `wp:env:up`: start local WordPress integration containers.
-- `test:wp:setup`: bootstrap WordPress and activate fixture plugin.
-- `test:wp:smoke`: run WP-CLI integration smoke checks.
-- `test:wp`: run `wp:env:up`, `test:wp:setup`, and `test:wp:smoke`.
-- `wp:env:down`: stop integration containers and remove volumes.
-- `lint`: run PHPMD and PHPCS.
-- `qa`: run PHPUnit plus lint checks.
-
 Run WordPress integration checks step-by-step:
 
 ```shell
@@ -185,7 +173,10 @@ composer run wp:env:down
 
 Note: `composer run test:wp` does not call `wp:env:down`; run teardown explicitly when you are finished.
 
-CI runs on pull requests and pushes to main. The PHP workflow validates Composer metadata, runs runtime compatibility smoke checks on PHP 7.2 through 8.4, runs PHPUnit unit tests on PHP 7.2 through 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3. A separate WordPress integration workflow provisions WordPress with WP-CLI and runs the integration smoke checks.
+CI runs on pull requests and pushes to `main`.
+
+- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 7.2 to 8.4, runs unit tests across PHP 7.2 to 8.4 using a compatible PHPUnit line per PHP version, and runs dependency audit, PHPMD, and PHPCS on PHP 8.3.
+- `WordPress Integration` provisions WordPress with WP-CLI and runs the integration smoke checks.
 
 ## Testing and code quality
 
@@ -199,7 +190,7 @@ Fork the repository and open a pull request for code changes, referencing the re
 
 Documentation improvements are also welcome through the project wiki.
 
-Please follow the [Code of Conduct](https://github.com/markheydon/monolog-wp-cli/blob/main/.github/CODE_OF_CONDUCT.md).
+Please follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 
 ## Support
 

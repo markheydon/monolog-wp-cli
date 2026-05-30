@@ -48,6 +48,14 @@ Verbose output is enabled when either:
 - `WP_DEBUG` is enabled, or
 - constructor `$verbose` is `true`
 
+Example verbose output from the WordPress integration smoke fixture:
+
+```text
+(NOTICE) context from wp {"foo":"bar"} []
+```
+
+In this output shape, the trailing `[]` is Monolog `extra` data when no extra keys are present.
+
 ## Default Monolog-to-WP-CLI mapping
 
 | Monolog level | WP-CLI method | includeLevelName | exit |
