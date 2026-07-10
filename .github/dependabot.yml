@@ -4,35 +4,48 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    groups:
-      composer-production-dependencies:
-        dependency-type: "production"
-        patterns:
-          - "*"
-      composer-development-dependencies:
-        dependency-type: "development"
-        patterns:
-          - "*"
+      day: "monday"
+      time: "04:00"
+      timezone: "Europe/London"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+    assignees:
+      - "markheydon"
     groups:
-      github-actions-minor-patch:
+      composer-minor-patch:
         update-types:
           - "minor"
           - "patch"
         patterns:
           - "*"
-      github-actions-major:
+      composer-major:
         update-types:
           - "major"
         patterns:
           - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Europe/London"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
+    assignees:
+      - "markheydon"
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+      actions-major:
+        update-types:
+          - "major"
+        patterns:
+          - "*"
