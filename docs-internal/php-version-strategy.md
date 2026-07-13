@@ -80,13 +80,13 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
     - **Intentional restriction path:** runtime PHP floor is higher than Monolog minimum and rationale is documented.
 - If you include concrete constraint values in this document, add a date label and update or remove them when they are no longer current.
 
-### Current application snapshot (2026-05-16)
+### Current application snapshot (2026-07-13)
 
-- Active release line target: Monolog `^2.5`.
+- Active release line target: Monolog `^3.0`.
 - Chosen path: **Alignment path**.
-- Runtime policy for this line: set `require -> php` to the Monolog 2 baseline (`7.2+`) using a Composer-compatible range (for example, `^7.2 || ^8.0`) and keep tooling requirements isolated to newer PHP CI jobs.
-- CI policy for this line: run runtime compatibility checks from the declared minimum upward, and keep PHPMD/PHPCS/audit (and any newer-only tooling) on dedicated newer-PHP jobs.
-- Monolog 3 status: documented as a future major release path; not part of the current line implementation.
+- Runtime policy for this line: set `require -> php` to the Monolog 3 baseline (`8.1+`) using a Composer-compatible range (`^8.1`) and keep tooling requirements aligned with this floor.
+- CI policy for this line: run unit tests and runtime compatibility checks from PHP 8.1 upward.
+- Monolog 2 status: maintained separately on the `2.x` branch with security and critical fixes; feature development focuses on Monolog 3 on `main`.
 
 ## Decision checklist
 

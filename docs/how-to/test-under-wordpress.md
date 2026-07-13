@@ -25,6 +25,13 @@ This starts `db` and `wordpress` containers, then initialises WordPress and acti
 
 By default, the local workflow uses the repository's current baseline smoke tuple. You can select another supported tuple by setting both `WORDPRESS_VERSION` and `WORDPRESS_PHP_VERSION` before running the scripts.
 
+Currently supported tuples:
+
+- WordPress `7.0` on PHP `8.4`
+- WordPress `7.0` on PHP `8.5`
+- WordPress `6.8` on PHP `8.3`
+- WordPress `6.8` on PHP `8.4`
+
 Example:
 
 ```shell

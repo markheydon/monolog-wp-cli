@@ -66,30 +66,30 @@ composer validate --strict
 
 ### Phase 5: CI and test configuration *(depends on Phase 4)*
 
-- [ ] Update `.github/workflows/php.yml`
+- [x] Update `.github/workflows/php.yml`
 
   Runtime compatibility matrix:
 
-  - [ ] Remove PHP 7.2
-  - [ ] Remove PHP 7.3
-  - [ ] Remove PHP 7.4
-  - [ ] Remove PHP 8.0
-  - [ ] Keep PHP 8.1
-  - [ ] Keep PHP 8.2
-  - [ ] Keep PHP 8.3
-  - [ ] Keep PHP 8.4
-  - [ ] Keep PHP 8.5
+  - [x] Remove PHP 7.2
+  - [x] Remove PHP 7.3
+  - [x] Remove PHP 7.4
+  - [x] Remove PHP 8.0
+  - [x] Keep PHP 8.1
+  - [x] Keep PHP 8.2
+  - [x] Keep PHP 8.3
+  - [x] Keep PHP 8.4
+  - [x] Keep PHP 8.5
 
   Unit test matrix:
 
-  - [ ] Remove PHP 7.x jobs
-  - [ ] Keep PHP 8.1–8.5 jobs
+  - [x] Remove PHP 7.x jobs
+  - [x] Keep PHP 8.1–8.5 jobs
 
   WordPress smoke coverage:
 
-  - [ ] Update matrix to supported WordPress/PHP tuples only
+  - [x] Update matrix to supported WordPress/PHP tuples only
 
-- [ ] Run local validation:
+- [x] Run local validation:
 
 ```bash
 composer test
@@ -102,43 +102,43 @@ composer run test:runtime-smoke
 
 #### Compatibility & release policy
 
-- [ ] Update `docs/explanation/compatibility-and-release-line-policy.md`
-  - [ ] Add Monolog 3 release line
-  - [ ] Document PHP 8.1+ requirement
+- [x] Update `docs/explanation/compatibility-and-release-line-policy.md`
+  - [x] Add Monolog 3 release line
+  - [x] Document PHP 8.1+ requirement
 
 #### WordPress testing documentation
 
-- [ ] Update `docs/how-to/test-under-wordpress.md`
-  - [ ] Refresh supported WordPress/PHP combinations
+- [x] Update `docs/how-to/test-under-wordpress.md`
+  - [x] Refresh supported WordPress/PHP combinations
 
 #### Internal version strategy
 
-- [ ] Update `docs-internal/php-version-strategy.md`
-  - [ ] Add Monolog 3 application snapshot
-  - [ ] Document PHP 8.1+ runtime requirement
+- [x] Update `docs-internal/php-version-strategy.md`
+  - [x] Add Monolog 3 application snapshot
+  - [x] Document PHP 8.1+ runtime requirement
 
 #### Internal WordPress policy
 
-- [ ] Update `docs-internal/wordpress-support-policy.md`
-  - [ ] Refresh supported tuples
-  - [ ] Refresh PHP support window
+- [x] Update `docs-internal/wordpress-support-policy.md`
+  - [x] Refresh supported tuples
+  - [x] Refresh PHP support window
 
 #### README
 
-- [ ] Update `README.md`
-  - [ ] State support for Monolog 3.x
-  - [ ] State PHP 8.1+ requirement
-  - [ ] Refresh badges if required
-  - [ ] Review installation examples
+- [x] Update `README.md`
+  - [x] State support for Monolog 3.x
+  - [x] State PHP 8.1+ requirement
+  - [x] Refresh badges if required
+  - [x] Review installation examples
 
 #### Upgrade guide
 
-- [ ] Create or update `UPGRADE.md`
-  - [ ] Document Monolog 2 → Monolog 3 migration
-  - [ ] Document PHP version changes
-  - [ ] Explain `Level` enum migration
-  - [ ] Explain `LogRecord` migration
-  - [ ] Link to Monolog's own upgrade documentation
+- [x] Create or update `UPGRADE.md`
+  - [x] Document Monolog 2 → Monolog 3 migration
+  - [x] Document PHP version changes
+  - [x] Explain `Level` enum migration
+  - [x] Explain `LogRecord` migration
+  - [x] Link to Monolog's own upgrade documentation
 
 ---
 

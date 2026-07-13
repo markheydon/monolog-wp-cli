@@ -13,10 +13,10 @@ composer require mhcg/monolog-wp-cli
 
 ## Requirements
 
-- PHP `^7.2 || ^8.0`
-- monolog/monolog `^2.5`
+- PHP `^8.1`
+- monolog/monolog `^3.0`
 
-Current stable releases target the Monolog 2 line. Monolog 3 support remains planned for a future major release.
+Current stable releases target the Monolog 3 line. The v2.x branch is maintained separately for Monolog 2 users and receives critical fixes.
 
 Official WordPress-runtime support is maintained separately from the package runtime floor. The current policy supports the current and previous WordPress major series through an explicit smoke-test tuple list rather than a blanket WordPress/PHP cross-product claim.
 
