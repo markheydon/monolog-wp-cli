@@ -62,6 +62,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
+          path: .
 
       - name: Upload coverage report
         uses: actions/upload-code-coverage@v1
