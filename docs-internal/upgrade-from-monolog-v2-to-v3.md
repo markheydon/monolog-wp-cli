@@ -21,13 +21,13 @@
 
 ---
 
-### Phase 2: Composer & package constraints *(parallel with Phase 3)*
+### Phase 2: Composer & package constraints *(parallel with Phase 3)*  ✅ Completed (13 July 2026)
 
-- [ ] Update `composer.json`
-  - [ ] Change `require.monolog/monolog` from `^2.5` → `^3.0`
-  - [ ] Change `require.php` from `^7.2 || ^8.0` → `^8.1`
-  - [ ] Update `require-dev` versions if needed for PHP 8.1 compatibility
-- [ ] Validate changes using:
+- [x] Update `composer.json`
+  - [x] Change `require.monolog/monolog` from `^2.5` → `^3.0`
+  - [x] Change `require.php` from `^7.2 || ^8.0` → `^8.1`
+  - [x] Update `require-dev` versions if needed for PHP 8.1 compatibility
+- [x] Validate changes using:
 
 ```bash
 composer validate --strict
@@ -35,32 +35,32 @@ composer validate --strict
 
 ---
 
-### Phase 3: Core handler implementation *(parallel with Phase 2)*
+### Phase 3: Core handler implementation *(parallel with Phase 2)* ✅ Completed (13 July 2026)
 
-- [ ] Update `src/Monolog/Handler/WPCLIHandler.php`
-  - [ ] Replace all `Logger::*` level constants with `Level` enum cases
-  - [ ] Update method signature to use `LogRecord`
-  - [ ] Convert record array access (`$record['level']`, `$record['context']`) to object property access (`$record->level`, `$record->context`)
-  - [ ] Ensure level comparisons work correctly with Monolog 3
-  - [ ] Add required imports:
-    - [ ] `use Monolog\Level;`
-    - [ ] `use Monolog\LogRecord;`
-- [ ] Update `getDefaultLoggerMap()` and related level mapping logic
-- [ ] Review handler implementation for any remaining Monolog 2 assumptions
-- [ ] Review any code relying on integer level comparisons
+- [x] Update `src/Monolog/Handler/WPCLIHandler.php`
+  - [x] Replace all `Logger::*` level constants with `Level` enum cases
+  - [x] Update method signature to use `LogRecord`
+  - [x] Convert record array access (`$record['level']`, `$record['context']`) to object property access (`$record->level`, `$record->context`)
+  - [x] Ensure level comparisons work correctly with Monolog 3
+  - [x] Add required imports:
+    - [x] `use Monolog\Level;`
+    - [x] `use Monolog\LogRecord;`
+- [x] Update `getDefaultLoggerMap()` and related level mapping logic
+- [x] Review handler implementation for any remaining Monolog 2 assumptions
+- [x] Review any code relying on integer level comparisons
 
 ---
 
-### Phase 4: Test implementation *(depends on Phase 3)*
+### Phase 4: Test implementation *(depends on Phase 3)* ✅ Completed (13 July 2026)
 
-- [ ] Update `tests/Monolog/Handler/WPCLIHandlerTest.php`
-  - [ ] Replace `Logger::*` constants with `Level::*`
-  - [ ] Update logger instantiation for Monolog 3
-  - [ ] Update any manually created records to use `LogRecord`
-- [ ] Review `tests/Monolog/Stubs/MockWPCLI.php`
-- [ ] Review `tests/Monolog/Stubs/MockExitException.php`
-- [ ] Migrate any Monolog 2 record arrays to Monolog 3 structures
-- [ ] Verify `tests/runtime-smoke.php` works against Monolog 3
+- [x] Update `tests/Monolog/Handler/WPCLIHandlerTest.php`
+  - [x] Replace `Logger::*` constants with `Level::*`
+  - [x] Update logger instantiation for Monolog 3
+  - [x] Update any manually created records to use `LogRecord`
+- [x] Review `tests/Monolog/Stubs/MockWPCLI.php`
+- [x] Review `tests/Monolog/Stubs/MockExitException.php`
+- [x] Migrate any Monolog 2 record arrays to Monolog 3 structures
+- [x] Verify `tests/runtime-smoke.php` works against Monolog 3
 
 ---
 

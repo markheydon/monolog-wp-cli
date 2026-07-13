@@ -34,7 +34,7 @@ WP_CLI::add_command('monolog-smoke', static function (array $args, array $assocA
 
     $logger = new \Monolog\Logger('monolog-smoke');
     $logger->pushHandler(
-        new \MHCG\Monolog\Handler\WPCLIHandler(\Monolog\Logger::DEBUG, true, $handlerVerbose)
+        new \MHCG\Monolog\Handler\WPCLIHandler(\Monolog\Level::Debug, true, $handlerVerbose)
     );
 
     switch ($level) {

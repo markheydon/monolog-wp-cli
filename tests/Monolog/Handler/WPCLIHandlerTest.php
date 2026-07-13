@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MHCGDev\Monolog\Handler;
 
 use MHCG\Monolog\Handler\WPCLIHandler;
+use Monolog\Level;
+use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
 use Monolog\Logger;
 
@@ -67,7 +69,7 @@ class WPCLIHandlerTest extends TestCase
      */
     private static function getHandleObjectForStandardTest(): WPCLIHandler
     {
-        return new WPCLIHandler(Logger::DEBUG);
+        return new WPCLIHandler(Level::Debug);
     }
 
     /**
@@ -81,17 +83,29 @@ class WPCLIHandlerTest extends TestCase
     }
 
     /**
-     * Partial record array with level.
+     * Partial record with level.
      *
-     * @param int $level
-     * @return array
+     * @param int|string|Level $level
+     * @return LogRecord
      */
-    private static function getLoggerRecordArrayWithLevel(int $level = Logger::DEBUG): array
+    private static function getLoggerRecordWithLevel(int|string|Level $level = Level::Debug): LogRecord
     {
-        $array = array(
-            'level' => $level
+        if ($level instanceof Level) {
+            $monologLevel = $level;
+        } elseif (is_string($level)) {
+            $monologLevel = Level::fromName($level);
+        } else {
+            $monologLevel = Level::fromValue($level);
+        }
+
+        return new LogRecord(
+            new \DateTimeImmutable(),
+            self::RUNNING_IN_TEST,
+            $monologLevel,
+            '',
+            [],
+            [],
         );
-        return $array;
     }
 
     //</editor-fold>
@@ -133,7 +147,7 @@ class WPCLIHandlerTest extends TestCase
         $this->sanityCheck();
 
         $this->pretendToBeInWPCLI();
-        $var = new WPCLIHandler(Logger::DEBUG, true, true);
+        $var = new WPCLIHandler(Level::Debug, true, true);
         $this->assertTrue(is_object($var));
         $this->assertInstanceOf('\MHCG\Monolog\Handler\WPCLIHandler', $var);
         unset($var);
@@ -148,11 +162,11 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $var = new WPCLIHandler(
-            Logger::DEBUG,
+            Level::Debug,
             true,
             false,
             [
-                Logger::NOTICE => [
+                Level::Notice->value => [
                     'method' => 'warning',
                     'includeLevelName' => true,
                 ],
@@ -175,11 +189,11 @@ class WPCLIHandlerTest extends TestCase
         $this->expectExceptionMessage('invalid method');
 
         new WPCLIHandler(
-            Logger::DEBUG,
+            Level::Debug,
             true,
             false,
             [
-                Logger::NOTICE => [
+                Level::Notice->value => [
                     'method' => 'method_does_not_exist',
                 ],
             ]
@@ -198,11 +212,11 @@ class WPCLIHandlerTest extends TestCase
         $this->expectExceptionMessage('specifies exit');
 
         new WPCLIHandler(
-            Logger::DEBUG,
+            Level::Debug,
             true,
             false,
             [
-                Logger::NOTICE => [
+                Level::Notice->value => [
                     'method' => 'log',
                     'includeLevelName' => true,
                     'exit' => true,
@@ -221,11 +235,14 @@ class WPCLIHandlerTest extends TestCase
         $this->sanityCheck();
 
         $this->pretendToBeInWPCLI();
-        $standard = new WPCLIHandler(Logger::DEBUG, true, false);
-        $testRecord = array(
-            'message' => 'This is a message',
-            'context' => array('whatever' => 'something'),
-            'extra' => array('whatever2' => 'something else'),
+        $standard = new WPCLIHandler(Level::Debug, true, false);
+        $testRecord = new LogRecord(
+            new \DateTimeImmutable(),
+            self::RUNNING_IN_TEST,
+            Level::Debug,
+            'This is a message',
+            ['whatever' => 'something'],
+            ['whatever2' => 'something else'],
         );
 
         $testStandard = $standard->getFormatter()->format($testRecord);
@@ -243,11 +260,14 @@ class WPCLIHandlerTest extends TestCase
         $this->sanityCheck();
 
         $this->pretendToBeInWPCLI();
-        $verbose = new WPCLIHandler(Logger::DEBUG, true, true);
-        $testRecord = array(
-            'message' => 'This is a message',
-            'context' => array('whatever' => 'something'),
-            'extra' => array('whatever2' => 'something else'),
+        $verbose = new WPCLIHandler(Level::Debug, true, true);
+        $testRecord = new LogRecord(
+            new \DateTimeImmutable(),
+            self::RUNNING_IN_TEST,
+            Level::Debug,
+            'This is a message',
+            ['whatever' => 'something'],
+            ['whatever2' => 'something else'],
         );
 
         $testVerbose = $verbose->getFormatter()->format($testRecord);
@@ -272,11 +292,14 @@ class WPCLIHandlerTest extends TestCase
         $this->pretendToBeInWPCLI();
         define('WP_DEBUG', true);
 
-        $handler = new WPCLIHandler(Logger::DEBUG, true, false);
-        $testRecord = array(
-            'message' => 'This is a message',
-            'context' => array('whatever' => 'something'),
-            'extra' => array('whatever2' => 'something else'),
+        $handler = new WPCLIHandler(Level::Debug, true, false);
+        $testRecord = new LogRecord(
+            new \DateTimeImmutable(),
+            self::RUNNING_IN_TEST,
+            Level::Debug,
+            'This is a message',
+            ['whatever' => 'something'],
+            ['whatever2' => 'something else'],
         );
 
         $formatted = $handler->getFormatter()->format($testRecord);
@@ -299,10 +322,9 @@ class WPCLIHandlerTest extends TestCase
     {
 
         // totally round the houses this but Logger doesn't currently return a set of all the level constants
-        $supportedNames = Logger::getLevels();
         $loggerLevels = [];
-        foreach ($supportedNames as $levelName) {
-            $loggerLevels[] = Logger::toMonologLevel($levelName);
+        foreach (Level::VALUES as $levelValue) {
+            $loggerLevels[] = $levelValue;
         }
         $loggerMap = WPCLIHandler::getDefaultLoggerMap();
         $difference = array_diff($loggerLevels, array_keys($loggerMap));
@@ -323,7 +345,7 @@ class WPCLIHandlerTest extends TestCase
         $defaultMap = WPCLIHandler::getDefaultLoggerMap();
         foreach ($defaultMap as $level => $mapping) {
             $this->assertTrue(count($mapping) > 0);
-            $levelName = Logger::getLevelName($level);
+            $levelName = (string) Level::fromValue($level)->getName();
             // this shouldn't throw an exception
             WPCLIHandler::validateLoggerMap($defaultMap, $level, $levelName);
             $this->assertTrue(true);
@@ -337,8 +359,8 @@ class WPCLIHandlerTest extends TestCase
     {
         $defaultMap = WPCLIHandler::getDefaultLoggerMap();
 
-        $this->assertSame('log', $defaultMap[Logger::NOTICE]['method']);
-        $this->assertTrue($defaultMap[Logger::NOTICE]['includeLevelName']);
+        $this->assertSame('log', $defaultMap[Level::Notice->value]['method']);
+        $this->assertTrue($defaultMap[Level::Notice->value]['includeLevelName']);
     }
 
     /**
@@ -379,7 +401,7 @@ class WPCLIHandlerTest extends TestCase
     public function testValidateLoggerMapInvalidUseOfExit()
     {
         $map = [
-            Logger::DEBUG => [
+            Level::Debug->value => [
                 'method' => 'debug',
                 'exit' => true
             ]
@@ -387,8 +409,8 @@ class WPCLIHandlerTest extends TestCase
         try {
             WPCLIHandler::validateLoggerMap(
                 $map,
-                Logger::DEBUG,
-                Logger::getLevelName(Logger::DEBUG)
+                Level::Debug,
+                'DEBUG'
             );
             $this->fail('Expected InvalidArgumentException was not thrown.');
         } catch (\InvalidArgumentException $e) {
@@ -402,7 +424,7 @@ class WPCLIHandlerTest extends TestCase
     public function testValidateLoggerMapValidUseOfExit()
     {
         $map = [
-            Logger::DEBUG => [
+            Level::Debug->value => [
                 'method' => 'error',
                 'exit' => true
             ]
@@ -410,8 +432,8 @@ class WPCLIHandlerTest extends TestCase
         // shouldn't throw an exception
         WPCLIHandler::validateLoggerMap(
             $map,
-            Logger::DEBUG,
-            Logger::getLevelName(Logger::DEBUG)
+            Level::Debug,
+            'DEBUG'
         );
         $this->assertTrue(true);
     }
@@ -476,7 +498,7 @@ class WPCLIHandlerTest extends TestCase
             999999 => [
                 'method' => 'method_does_not_exist'
             ],
-            Logger::DEBUG => [
+            Level::Debug->value => [
                 'method' => 'debug',
             ]
         ];
@@ -484,11 +506,11 @@ class WPCLIHandlerTest extends TestCase
         $supported = WPCLIHandler::getSupportedLevels($map);
         $this->assertCount(2, $map);
         $this->assertCount(1, $supported);
-        $this->assertEquals($supported[0], Logger::DEBUG);
+        $this->assertEquals($supported[0], Level::Debug->value);
     }
 
     /**
-     * Tests isHandling of WPCLIHandler returns false for an unsupported logging level.
+     * Tests isHandling of WPCLIHandler returns false for a record below the handler level.
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::isHandling
      */
@@ -497,8 +519,8 @@ class WPCLIHandlerTest extends TestCase
         $this->sanityCheck();
 
         $this->pretendToBeInWPCLI();
-        $handler = self::getHandleObjectForStandardTest();
-        $this->assertFalse($handler->isHandling(self::getLoggerRecordArrayWithLevel(999)));
+        $handler = new WPCLIHandler(Level::Warning);
+        $this->assertFalse($handler->isHandling(self::getLoggerRecordWithLevel(Level::Info)));
     }
 
     /**
@@ -512,7 +534,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::DEBUG)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Debug)));
     }
 
     /**
@@ -526,7 +548,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::INFO)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Info)));
     }
 
     /**
@@ -540,7 +562,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::NOTICE)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Notice)));
     }
 
     /**
@@ -554,7 +576,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::WARNING)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Warning)));
     }
 
     /**
@@ -568,7 +590,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::ERROR)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Error)));
     }
 
     /**
@@ -582,7 +604,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::CRITICAL)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Critical)));
     }
 
     /**
@@ -596,7 +618,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::ALERT)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Alert)));
     }
 
     /**
@@ -610,7 +632,7 @@ class WPCLIHandlerTest extends TestCase
 
         $this->pretendToBeInWPCLI();
         $handler = self::getHandleObjectForStandardTest();
-        $this->assertTrue($handler->isHandling(self::getLoggerRecordArrayWithLevel(Logger::EMERGENCY)));
+        $this->assertTrue($handler->isHandling(self::getLoggerRecordWithLevel(Level::Emergency)));
     }
 
     //</editor-fold>
@@ -724,7 +746,7 @@ class WPCLIHandlerTest extends TestCase
         \WP_CLI::resetCalls();
 
         $log = self::getLoggerObjectForStandardTest();
-        $log->pushHandler(new WPCLIHandler(Logger::WARNING));
+        $log->pushHandler(new WPCLIHandler(Level::Warning));
 
         $log->warning('This is a warning');
         $log->error('An error has occurred');
@@ -850,11 +872,11 @@ class WPCLIHandlerTest extends TestCase
         $logger = self::getLoggerObjectForStandardTest();
         $logger->pushHandler(
             new WPCLIHandler(
-                Logger::DEBUG,
+                Level::Debug,
                 true,
                 false,
                 [
-                    Logger::INFO => [
+                    Level::Info->value => [
                         'method' => 'debug',
                         'includeLevelName' => true,
                     ],

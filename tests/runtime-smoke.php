@@ -3,15 +3,14 @@
 declare(strict_types=1);
 
 use MHCG\Monolog\Handler\WPCLIHandler;
+use Monolog\Level;
 use Monolog\Logger;
 
 if (!defined('WP_CLI')) {
     define('WP_CLI', true);
 }
 
-class RuntimeSmokeExitException extends \RuntimeException
-{
-}
+class RuntimeSmokeExitException extends \RuntimeException {}
 
 if (!class_exists('WP_CLI', false)) {
     class WP_CLI
@@ -85,7 +84,7 @@ function runtimeSmokeAssertSame($expected, $actual, string $message): void
         fwrite(
             STDERR,
             $message . ' Expected ' . var_export($expected, true)
-            . ', got ' . var_export($actual, true) . "\n"
+                . ', got ' . var_export($actual, true) . "\n"
         );
         exit(1);
     }
@@ -99,7 +98,7 @@ function runtimeSmokeAssertContains(string $needle, string $haystack, string $me
     }
 }
 
-$handler = new WPCLIHandler(Logger::DEBUG);
+$handler = new WPCLIHandler(Level::Debug);
 $logger = new Logger('runtime-smoke');
 $logger->pushHandler($handler);
 

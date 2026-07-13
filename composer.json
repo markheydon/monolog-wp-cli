@@ -17,8 +17,8 @@
   ],
   "type": "library",
   "require": {
-    "php": "^7.2 || ^8.0",
-    "monolog/monolog": "^2.5"
+    "php": "^8.1",
+    "monolog/monolog": "^3.0"
   },
   "require-dev": {
     "wp-cli/wp-cli": "^2.12",
