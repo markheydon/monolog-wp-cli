@@ -20,4 +20,4 @@ Keep entries concise and factual. Prefer one file per topic.
 
 ## Planned Updates
 
-- [Upgrade from Monolog v2 to v2](upgrade-from-monolog-v2-to-v3.md)
+- [Upgrade from Monolog v2 to v3](upgrade-from-monolog-v2-to-v3.md)

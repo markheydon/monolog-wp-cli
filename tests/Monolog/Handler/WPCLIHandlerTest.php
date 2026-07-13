@@ -470,6 +470,24 @@ class WPCLIHandlerTest extends TestCase
 
     //<editor-fold desc="Handling and Supported Tests">
     /**
+     * Tests to make sure string-based level keys are normalised to numeric values.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::getSupportedLevels
+     */
+    public function testSupportedLevelsNormalizesStringKeys()
+    {
+        $map = [
+            'warning' => [
+                'method' => 'warning',
+            ],
+        ];
+
+        $supported = WPCLIHandler::getSupportedLevels($map);
+
+        $this->assertSame([Level::Warning->value], $supported);
+    }
+
+    /**
      * Tests to make sure all of the default supported levels are actually showing as supported
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::getSupportedLevels

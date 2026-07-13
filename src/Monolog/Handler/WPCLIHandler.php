@@ -47,49 +47,18 @@ class WPCLIHandler extends AbstractProcessingHandler
         bool $verbose = false,
         ?array $loggerMap = null
     ) {
-        $isInCLI = (defined('WP_CLI') && WP_CLI);
-        if (!$isInCLI) {
+        if (!defined('WP_CLI') || !WP_CLI) {
             throw new \RuntimeException('');
         }
 
         parent::__construct($level, $bubble);
 
-        $verbose = (defined('WP_DEBUG') ? WP_DEBUG : false) || $verbose;
-        $this->verbose = $verbose;
+        $this->verbose = (defined('WP_DEBUG') ? WP_DEBUG : false) || $verbose;
 
         if ($loggerMap !== null) {
-            $this->loggerMap = self::mergeLoggerMapOverrides($loggerMap);
-            self::validateAllLoggerMapEntries($this->loggerMap);
+            $this->loggerMap = WPCLIHandlerSupport::mergeLoggerMapOverrides($loggerMap);
+            WPCLIHandlerSupport::validateAllLoggerMapEntries($this->loggerMap);
         }
-    }
-
-    /**
-     * Merge user logger map overrides over defaults at per-level key depth.
-     *
-     * @param array $loggerMap Override entries keyed by Monolog level.
-     *
-     * @return array
-     */
-    private static function mergeLoggerMapOverrides(array $loggerMap): array
-    {
-        $defaultMap = self::getDefaultLoggerMap();
-
-        foreach ($loggerMap as $level => $entry) {
-            $normalizedLevel = self::normalizeLevel($level);
-
-            if (
-                !isset($defaultMap[$normalizedLevel])
-                || !is_array($defaultMap[$normalizedLevel])
-                || !is_array($entry)
-            ) {
-                $defaultMap[$normalizedLevel] = $entry;
-                continue;
-            }
-
-            $defaultMap[$normalizedLevel] = array_replace($defaultMap[$normalizedLevel], $entry);
-        }
-
-        return $defaultMap;
     }
 
     /**
@@ -121,22 +90,7 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function getSupportedLevels(array $map)
     {
-        $results = [];
-        // validate the supplied map and return only the valid levels
-        $levels = array_keys($map);
-        foreach ($levels as $level) {
-            try {
-                self::validateLoggerMap(
-                    $map,
-                    self::normalizeLevel($level),
-                    self::getLevelName(self::normalizeLevel($level))
-                );
-                $results[] = $level;
-            } catch (\Exception $e) {
-                // do nothing
-            }
-        }
-        return $results;
+        return WPCLIHandlerSupport::getSupportedLevels($map);
     }
 
     /**
@@ -152,32 +106,25 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     protected function write(LogRecord $record): void
     {
-        // init vars for whatever being used
         $level = self::normalizeLevel($record->level);
         $levelName = self::getLevelName($record->level);
+        $loggerMap = $this->getLoggerMap();
         $formattedMessage = $this->getFormatter()->format($record);
 
-        // build up details of calling method
-        $loggerMap = $this->getLoggerMap();
         self::validateLoggerMap($loggerMap, $level, $levelName);
 
         $method = $loggerMap[$level]['method'];
-        $includeLevelName = isset($loggerMap[$level]['includeLevelName'])
-            ? (bool)$loggerMap[$level]['includeLevelName'] : false;
-        $exit = isset($loggerMap[$level]['exit']) ? (bool)$loggerMap[$level]['exit'] : false;
+        $logMessage = isset($loggerMap[$level]['includeLevelName']) && (bool) $loggerMap[$level]['includeLevelName']
+            ? '(' . $levelName . ') ' . $formattedMessage
+            : $formattedMessage;
+        $exit = isset($loggerMap[$level]['exit']) ? (bool) $loggerMap[$level]['exit'] : false;
 
-        if ($includeLevelName) {
-            $logMessage = '(' . $levelName . ') ' . $formattedMessage;
-        } else {
-            $logMessage = $formattedMessage;
-        }
-
-        // call it
-        if ($method != 'error') {
+        if ($method !== 'error') {
             WP_CLI::$method($logMessage);
-        } else {
-            WP_CLI::$method($logMessage, $exit);
+            return;
         }
+
+        WP_CLI::$method($logMessage, $exit);
     }
 
     /**
@@ -189,94 +136,24 @@ class WPCLIHandler extends AbstractProcessingHandler
      *
      * @throws \InvalidArgumentException
      */
-    private static function getLevelName(int|string|Level $level): string
-    {
-        $normalizedLevel = self::toMonologLevel($level);
-
-        if ($normalizedLevel === null) {
-            return 'UNKNOWN';
-        }
-
-        return match ($normalizedLevel) {
-            Level::Debug => 'DEBUG',
-            Level::Info => 'INFO',
-            Level::Notice => 'NOTICE',
-            Level::Warning => 'WARNING',
-            Level::Error => 'ERROR',
-            Level::Critical => 'CRITICAL',
-            Level::Alert => 'ALERT',
-            Level::Emergency => 'EMERGENCY',
-        };
-    }
-
-    private static function normalizeLevel(int|string|Level $level): int
-    {
-        $normalizedLevel = self::toMonologLevel($level);
-
-        if ($normalizedLevel === null) {
-            $levelValue = is_int($level) ? $level : (string) $level;
-            throw new \InvalidArgumentException(
-                'Logger map has no entry for level ' . $levelValue . '(' . $levelValue . ')'
-            );
-        }
-
-        return $normalizedLevel->value;
-    }
-
-    private static function toMonologLevel(int|string|Level $level): ?Level
-    {
-        if ($level instanceof Level) {
-            return $level;
-        }
-
-        if (is_string($level)) {
-            return match (strtolower($level)) {
-                'debug' => Level::Debug,
-                'info' => Level::Info,
-                'notice' => Level::Notice,
-                'warning' => Level::Warning,
-                'error' => Level::Error,
-                'critical' => Level::Critical,
-                'alert' => Level::Alert,
-                'emergency' => Level::Emergency,
-                default => null,
-            };
-        }
-
-        return match ($level) {
-            100 => Level::Debug,
-            200 => Level::Info,
-            250 => Level::Notice,
-            300 => Level::Warning,
-            400 => Level::Error,
-            500 => Level::Critical,
-            550 => Level::Alert,
-            600 => Level::Emergency,
-            default => null,
-        };
-    }
-
     public static function validateLoggerMap(array $map, int|string|Level $level, string $levelName = '')
     {
-        $normalizedLevel = self::toMonologLevel($level);
-        $levelValue = $normalizedLevel !== null ? $normalizedLevel->value : (is_int($level) ? $level : (string) $level);
-        $entry = isset($map[(string)$levelValue]) ? $map[(string)$levelValue] : array();
-        if (empty($entry)) {
-            throw new \InvalidArgumentException(
-                'Logger map has no entry for level ' . $levelName . '(' . $levelValue . ')'
-            );
-        }
-        if (!method_exists('WP_CLI', $entry['method'])) {
-            throw new \InvalidArgumentException(
-                'Logger map contains an invalid method for level ' . $levelName . '(' . $levelValue . ')'
-            );
-        }
-        if ($entry['method'] !== 'error' && isset($entry['exit']) && $entry['exit'] === true) {
-            throw new \InvalidArgumentException(
-                'Logger map for level ' . $levelName . '(' . $levelValue . ') specifies exit but
-                         exit is only valid for \'error\' method'
-            );
-        }
+        WPCLIHandlerSupport::validateLoggerMap($map, $level, $levelName);
+    }
+
+    public static function normalizeLevel(int|string|Level $level): int
+    {
+        return WPCLIHandlerSupport::normalizeLevel($level);
+    }
+
+    public static function getLevelName(int|string|Level $level): string
+    {
+        return WPCLIHandlerSupport::getLevelName($level);
+    }
+
+    public static function toMonologLevel(int|string|Level $level): ?Level
+    {
+        return WPCLIHandlerSupport::toMonologLevel($level);
     }
 
     /**
@@ -289,10 +166,7 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function validateAllLoggerMapEntries(array $map): void
     {
-        foreach (array_keys($map) as $level) {
-            $normalizedLevel = self::normalizeLevel($level);
-            self::validateLoggerMap($map, $normalizedLevel, self::getLevelName($normalizedLevel));
-        }
+        WPCLIHandlerSupport::validateAllLoggerMapEntries($map);
     }
 
     /**
@@ -316,42 +190,7 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function getDefaultLoggerMap()
     {
-        return [
-            Level::Debug->value => [
-                'method' => 'debug',
-            ],
-            Level::Info->value => [
-                'method' => 'log',
-            ],
-            Level::Notice->value => [
-                'method' => 'log',
-                'includeLevelName' => true,
-            ],
-            Level::Warning->value => [
-                'method' => 'warning',
-                'includeLevelName' => true,
-            ],
-            Level::Error->value => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => false,
-            ],
-            Level::Critical->value => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => true,
-            ],
-            Level::Alert->value => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => true,
-            ],
-            Level::Emergency->value => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => true,
-            ]
-        ];
+        return WPCLIHandlerSupport::getDefaultLoggerMap();
     }
 
     /**

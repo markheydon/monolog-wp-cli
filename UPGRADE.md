@@ -85,7 +85,7 @@ $customMap = [
 use Monolog\Level;
 
 $customMap = [
-    Level::Notice => [
+    Level::Notice->value => [
         'method' => 'warning',
         'includeLevelName' => true,
     ],
