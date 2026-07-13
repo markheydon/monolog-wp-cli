@@ -1,0 +1,71 @@
+name: Code Coverage
+description: Run PHPUnit tests with code coverage and upload the report to GitHub Code Scanning.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  code-quality: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and generate coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+          coverage: xdebug
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHPUnit with coverage
+        run: |
+          mkdir -p coverage
+          vendor/bin/phpunit --coverage-filter src --coverage-cobertura=coverage/coverage.xml
+
+      - name: Upload coverage artifact
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/coverage.xml
+
+  upload-coverage:
+    name: Upload coverage to GitHub
+    needs: build
+    if: ${{ !cancelled() && needs.build.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+
+      - name: Upload coverage report
+        uses: actions/upload-code-coverage@v1
+        with:
+          file: coverage/coverage.xml
+          language: PHP
+          label: code-coverage/phpunit
