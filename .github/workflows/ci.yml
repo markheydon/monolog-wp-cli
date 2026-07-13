@@ -1,5 +1,4 @@
 name: Code Coverage
-description: Run PHPUnit tests with code coverage and upload the report to GitHub Code Scanning.
 
 on:
   push:
@@ -10,56 +9,101 @@ on:
 
 permissions:
   contents: read
-  code-quality: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  coverage:
+    name: PHPUnit Coverage
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+
+    env:
+      PHP_VERSION: '8.4'
+      COVERAGE_MINIMUM: '80'
+
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - uses: shivammathur/setup-php@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           tools: composer
           coverage: xdebug
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: composer install --prefer-dist --no-progress --no-interaction
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
-      - run: |
-          mkdir -p coverage
-          vendor/bin/phpunit --coverage-filter src --coverage-cobertura=cobertura.xml
+      - name: Run PHPUnit with coverage
+        env:
+          XDEBUG_MODE: coverage
+        run: |
+          mkdir -p coverage/html
 
-      - uses: actions/upload-artifact@v4
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+          vendor/bin/phpunit \
+            --coverage-filter src \
+            --coverage-cobertura coverage/cobertura.xml \
+            --coverage-html coverage/html
+
+      - name: Check coverage threshold
+        run: |
+          php <<'PHP'
+          <?php
+
+          $coverageFile = 'coverage/cobertura.xml';
+          $minimum = (float) getenv('COVERAGE_MINIMUM');
+
+          if (! file_exists($coverageFile)) {
+              fwrite(STDERR, "Coverage file not found: {$coverageFile}\n");
+              exit(1);
+          }
+
+          $xml = simplexml_load_file($coverageFile);
+
+          if (! $xml || ! isset($xml['line-rate'])) {
+              fwrite(STDERR, "Unable to read line-rate from {$coverageFile}\n");
+              exit(1);
+          }
+
+          $coverage = round(((float) $xml['line-rate']) * 100, 2);
+
+          echo "Line coverage: {$coverage}%\n";
+          echo "Required minimum: {$minimum}%\n";
+
+          file_put_contents(
+              getenv('GITHUB_STEP_SUMMARY'),
+              "## PHPUnit Coverage\n\n" .
+              "- Line coverage: `{$coverage}%`\n" .
+              "- Required minimum: `{$minimum}%`\n\n" .
+              ($coverage >= $minimum ? "✅ Coverage threshold met.\n" : "❌ Coverage threshold not met.\n"),
+              FILE_APPEND
+          );
+
+          if ($coverage < $minimum) {
+              exit(1);
+          }
+          PHP
+
+      - name: Upload Cobertura coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: cobertura-report
-          path: cobertura.xml
+          path: coverage/cobertura.xml
+          retention-days: 14
 
-  upload-coverage:
-    needs: build
-    if: ${{ !cancelled() && needs.build.result == 'success' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      code-quality: write
-    steps:
-      - uses: actions/download-artifact@v4
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: cobertura-report
-
-      - uses: actions/upload-code-coverage@v1
-        with:
-          file: cobertura.xml
-          language: PHP
-          label: code-coverage/phpunit
+          name: coverage-html-report
+          path: coverage/html
+          retention-days: 14
+          
