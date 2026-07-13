@@ -164,7 +164,7 @@ composer run lint
 composer run qa
 ```
 
-Run WordPress integration checks step-by-step:
+Run WordPress integration checks step-by-step (same as running `composer run test:wp`):
 
 ```shell
 composer run wp:env:up
