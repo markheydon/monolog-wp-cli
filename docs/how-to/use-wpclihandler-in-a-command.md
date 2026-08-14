@@ -15,12 +15,13 @@ composer require mhcg/monolog-wp-cli
 ```php
 <?php
 
+use Monolog\Level;
 use Monolog\Logger;
 use MHCG\Monolog\Handler\WPCLIHandler;
 
 function mycommand_command( $args ) {
     $logger = new Logger( 'mycommand' );
-    $logger->pushHandler( new WPCLIHandler( Logger::INFO ) );
+    $logger->pushHandler( new WPCLIHandler( Level::Info ) );
 
     $logger->info( 'Starting' );
     $logger->warning( 'Potential issue detected' );
@@ -35,11 +36,11 @@ WP_CLI::add_command( 'mycommand', 'mycommand_command' );
 ```php
 $logger->pushHandler(
     new WPCLIHandler(
-        Logger::INFO,
+        Level::Info,
         true,
         false,
         [
-            Logger::NOTICE => [
+            Level::Notice->value => [
                 'method' => 'warning',
                 'includeLevelName' => true,
             ],
@@ -51,7 +52,7 @@ $logger->pushHandler(
 4. Optional: if you want Monolog `context` and `extra` data in output, enable verbose mode:
 
 ```php
-$logger->pushHandler( new WPCLIHandler( Logger::INFO, true, true ) );
+$logger->pushHandler( new WPCLIHandler( Level::Info, true, true ) );
 $logger->notice( 'Processed batch', [ 'batch' => 12 ] );
 ```
 
@@ -78,6 +79,7 @@ wp mycommand --quiet
 ## Notes
 
 - The handler is intended for WP-CLI runtime. Constructing it outside WP-CLI raises a runtime exception.
+- Use the Monolog `Level` enum for handler thresholds and logger-map keys on Monolog 3.
 - `debug` messages rely on WP-CLI debug mode.
 - Monolog `context` and `extra` data are only shown when the handler is in verbose mode, either via the constructor flag or `WP_DEBUG`.
 - From v2.2, `notice` maps to `WP_CLI::log()` by default.

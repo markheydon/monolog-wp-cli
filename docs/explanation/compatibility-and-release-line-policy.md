@@ -29,7 +29,7 @@ That avoids two common mistakes:
 
 ## Current WordPress-runtime support snapshot
 
-As of 2026-05-30, the repository's official WordPress smoke coverage is maintained as explicit tuples:
+As of 2026-07-13, the repository's official WordPress smoke coverage is maintained as explicit tuples:
 
 - WordPress `7.0` on PHP `8.4`
 - WordPress `7.0` on PHP `8.5`
@@ -44,8 +44,8 @@ This tuple list is intentionally narrower than a full Cartesian product. If upst
 
 CI separates concerns:
 
-- Runtime compatibility jobs run across PHP 7.2 to 8.5.
-- Unit tests run across PHP 7.2 to 8.5 with a compatible PHPUnit line per PHP version.
+- Runtime compatibility jobs run across PHP 8.1 to 8.5, matching the Monolog 3 package floor.
+- Unit tests run across PHP 8.1 to 8.5 with a compatible PHPUnit line per PHP version.
 - Tooling jobs run on PHP 8.3.
 - WordPress smoke jobs run only for the explicit WordPress/PHP tuples that the repository currently treats as officially supported.
 
