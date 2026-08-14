@@ -9,6 +9,8 @@ description: >-
 
 Generate a concise, practical README.md for this repository by analysing repository-native sources of truth. Keep the result suitable for both GitHub and Packagist rendering. Do not invent details unsupported by files in this repository.
 
+Repository-wide conventions and change discipline: [AGENTS.md](../../../AGENTS.md). README and badge policy: [docs/readme-and-badges.md](../../../docs/readme-and-badges.md).
+
 ## Primary inputs
 
 - `composer.json`

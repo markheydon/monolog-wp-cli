@@ -2,7 +2,6 @@
 
 [![Packagist Version](https://img.shields.io/packagist/v/mhcg/monolog-wp-cli.svg)](https://packagist.org/packages/mhcg/monolog-wp-cli)
 [![PHP CI](https://github.com/markheydon/monolog-wp-cli/actions/workflows/php.yml/badge.svg?branch=main)](https://github.com/markheydon/monolog-wp-cli/actions/workflows/php.yml)
-[![CI](https://github.com/markheydon/monolog-wp-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/markheydon/monolog-wp-cli/actions/workflows/ci.yml)
 
 Extension for [Monolog](https://github.com/Seldaek/monolog) that routes log output through WP-CLI when running `wp` commands.
 

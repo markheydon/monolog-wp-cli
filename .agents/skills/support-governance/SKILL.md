@@ -8,7 +8,7 @@ description: >-
 
 # Support governance
 
-Shared operating guide for version-support policy and support-to-testing alignment.
+Shared operating guide for version-support policy and support-to-testing alignment. Repository-wide agent context and change discipline: [AGENTS.md](../../../AGENTS.md).
 
 ## Purpose
 
