@@ -3,6 +3,7 @@
   <testsuites>
     <testsuite name="Unit Tests">
       <directory suffix="Test.php">./tests</directory>
+      <exclude>tests/wordpress/fixtures</exclude>
     </testsuite>
   </testsuites>
   <php>

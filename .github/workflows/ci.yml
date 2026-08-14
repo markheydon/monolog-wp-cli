@@ -1,0 +1,108 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: PHPUnit Coverage
+    runs-on: ubuntu-latest
+
+    env:
+      PHP_VERSION: '8.4'
+      COVERAGE_MINIMUM: '80'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer
+          coverage: xdebug
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHPUnit with coverage
+        env:
+          XDEBUG_MODE: coverage
+        run: |
+          mkdir -p coverage/html
+
+          vendor/bin/phpunit \
+            --coverage-filter src \
+            --coverage-cobertura coverage/cobertura.xml \
+            --coverage-html coverage/html
+
+      - name: Check coverage threshold
+        run: |
+          php <<'PHP'
+          <?php
+
+          $coverageFile = 'coverage/cobertura.xml';
+          $minimum = (float) getenv('COVERAGE_MINIMUM');
+
+          if (! file_exists($coverageFile)) {
+              fwrite(STDERR, "Coverage file not found: {$coverageFile}\n");
+              exit(1);
+          }
+
+          $xml = simplexml_load_file($coverageFile);
+
+          if (! $xml || ! isset($xml['line-rate'])) {
+              fwrite(STDERR, "Unable to read line-rate from {$coverageFile}\n");
+              exit(1);
+          }
+
+          $coverage = round(((float) $xml['line-rate']) * 100, 2);
+
+          echo "Line coverage: {$coverage}%\n";
+          echo "Required minimum: {$minimum}%\n";
+
+          file_put_contents(
+              getenv('GITHUB_STEP_SUMMARY'),
+              "## PHPUnit Coverage\n\n" .
+              "- Line coverage: `{$coverage}%`\n" .
+              "- Required minimum: `{$minimum}%`\n\n" .
+              ($coverage >= $minimum ? "✅ Coverage threshold met.\n" : "❌ Coverage threshold not met.\n"),
+              FILE_APPEND
+          );
+
+          if ($coverage < $minimum) {
+              exit(1);
+          }
+          PHP
+
+      - name: Upload Cobertura coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-report
+          path: coverage/cobertura.xml
+          retention-days: 14
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-html-report
+          path: coverage/html
+          retention-days: 14

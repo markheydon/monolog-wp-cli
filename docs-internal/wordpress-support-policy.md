@@ -39,14 +39,14 @@ Apply these rules in order.
 - Runtime policy interpretation for this snapshot: WordPress `7.0.x` and `6.8.x` are the maintained series for official smoke coverage.
 - Eligible PHP window for WordPress-runtime support: `8.3`, `8.4`, and `8.5`, because those branches are still upstream-supported on the snapshot date.
 
-### Supported smoke-test tuples
+### Supported smoke-test tuples (2026-07-13)
 
 - WordPress `7.0` on PHP `8.4`
 - WordPress `7.0` on PHP `8.5`
 - WordPress `6.8` on PHP `8.3`
 - WordPress `6.8` on PHP `8.4`
 
-These tuples are chosen because they are within the policy window and have corresponding official WordPress and WP-CLI images available.
+These tuples are chosen because they are within the policy window and have corresponding official WordPress and WP-CLI images available. These tuples are tested as part of CI for Monolog 3 support.
 
 ## Maintenance rules
 

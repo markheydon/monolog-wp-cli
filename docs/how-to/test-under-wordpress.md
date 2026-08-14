@@ -21,9 +21,16 @@ composer run wp:env:up
 composer run test:wp:setup
 ```
 
-This starts `db` and `wordpress` containers, then initialises WordPress and activates the smoke fixture plugin used for testing.
+This starts `db` and `wordpress` containers, then initialises WordPress, installs the smoke fixture plugin via Composer (path repository to this package), and activates it.
 
 By default, the local workflow uses the repository's current baseline smoke tuple. You can select another supported tuple by setting both `WORDPRESS_VERSION` and `WORDPRESS_PHP_VERSION` before running the scripts.
+
+Currently supported tuples:
+
+- WordPress `7.0` on PHP `8.4`
+- WordPress `7.0` on PHP `8.5`
+- WordPress `6.8` on PHP `8.3`
+- WordPress `6.8` on PHP `8.4`
 
 Example:
 
@@ -75,7 +82,8 @@ Note: `composer run test:wp` does not run teardown automatically.
 ## Notes
 
 - The fixture command is registered as `wp monolog-smoke`.
-- Fixture source is at `tests/wordpress/fixtures/monolog-wp-cli-smoke/monolog-wp-cli-smoke.php`.
+- Fixture source is at `tests/wordpress/fixtures/monolog-wp-cli-smoke/`.
+- The fixture is a Composer consumer: `tests/wordpress/fixtures/monolog-wp-cli-smoke/composer.json` requires `mhcg/monolog-wp-cli` from a path repository pointing at the package root (`minimum-stability: dev` so branch checkouts resolve). Setup runs `composer update` in that directory on the host, then copies the full plugin (including `vendor/`) into the WordPress container.
 - Integration scripts are at `tests/wordpress/bin/`.
 - The Docker image tags are derived from `WORDPRESS_VERSION` and `WORDPRESS_PHP_VERSION`.
 - When a new WordPress major release lands, refresh both the tuple list and the CI matrix together rather than updating only one side.

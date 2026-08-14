@@ -1,15 +1,15 @@
 # Explanation: Compatibility and Release-line Policy
 
-This package currently follows the Monolog 2 release line and separates package runtime compatibility from official WordPress-runtime support.
+This package currently follows the Monolog 3 release line and separates package runtime compatibility from official WordPress-runtime support.
 
 ## Package runtime compatibility
 
 Current package constraints are:
 
-- PHP: `^7.2 || ^8.0`
-- Monolog: `^2.5`
+- PHP: `^8.1`
+- Monolog: `^3.0`
 
-This is the package runtime floor for the current release line. It exists so projects on older but still-used PHP runtimes can integrate WP-CLI logging through Monolog without requiring a Monolog 3 migration.
+This is the package runtime floor for the current release line. Monolog 2 users can continue to use the v2.x branch, which is maintained separately.
 
 Package runtime compatibility is primarily governed by the targeted Monolog major, not by the newest PHP version used in maintainer tooling or WordPress smoke tests.
 
@@ -29,7 +29,7 @@ That avoids two common mistakes:
 
 ## Current WordPress-runtime support snapshot
 
-As of 2026-05-30, the repository's official WordPress smoke coverage is maintained as explicit tuples:
+As of 2026-07-13, the repository's official WordPress smoke coverage is maintained as explicit tuples:
 
 - WordPress `7.0` on PHP `8.4`
 - WordPress `7.0` on PHP `8.5`
@@ -44,15 +44,13 @@ This tuple list is intentionally narrower than a full Cartesian product. If upst
 
 CI separates concerns:
 
-- Runtime compatibility jobs run across PHP 7.2 to 8.5.
-- Unit tests run across PHP 7.2 to 8.5 with a compatible PHPUnit line per PHP version.
+- Runtime compatibility jobs run across PHP 8.1 to 8.5, matching the Monolog 3 package floor.
+- Unit tests run across PHP 8.1 to 8.5 with a compatible PHPUnit line per PHP version.
 - Tooling jobs run on PHP 8.3.
 - WordPress smoke jobs run only for the explicit WordPress/PHP tuples that the repository currently treats as officially supported.
 
 This keeps package runtime promises tied to `composer.json` while giving WordPress-runtime support its own concrete, executable test surface.
 
-## Monolog 3 position
+## Monolog 2 legacy support
 
-Monolog 3 support is treated as a future major-release path rather than a change in the current release line.
-
-That separation avoids changing runtime expectations for existing users on the Monolog 2 line.
+The v2.x branch is maintained separately for users still on Monolog 2. The v2.x branch uses PHP `^7.2 || ^8.0` with Monolog `^2.5`. Critical fixes may be backported to the v2.x branch when warranted. Feature development focuses on the main branch targeting Monolog 3.

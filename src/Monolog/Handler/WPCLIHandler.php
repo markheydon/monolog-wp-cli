@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace MHCG\Monolog\Handler;
 
-use Monolog\Logger;
+use Monolog\Level;
+use Monolog\LogRecord;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -35,68 +36,45 @@ class WPCLIHandler extends AbstractProcessingHandler
     /**
      * WPCLIHandler constructor.
      *
-     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param int|string|Level $level The minimum logging level at which this handler will be triggered
      * @param bool $bubble Whether the messages that are handled can bubble up the stack or not
      * @param bool $verbose Will use this or WP_DEBUG to include extra information in logging messages
      * @param array|null $loggerMap Optional logger map overrides merged over the defaults
      */
-    public function __construct($level = Logger::WARNING, $bubble = true, $verbose = false, ?array $loggerMap = null)
-    {
-        $isInCLI = (defined('WP_CLI') && WP_CLI);
-        if (!$isInCLI) {
-            throw new \RuntimeException('');
+    public function __construct(
+        int|string|Level $level = Level::Warning,
+        bool $bubble = true,
+        bool $verbose = false,
+        ?array $loggerMap = null
+    ) {
+        if (!defined('WP_CLI') || !WP_CLI) {
+            throw new \RuntimeException('WPCLIHandler can only be used when WP-CLI is available.');
         }
 
         parent::__construct($level, $bubble);
 
-        $verbose = (defined('WP_DEBUG') ? WP_DEBUG : false) || $verbose;
-        $this->verbose = $verbose;
+        $this->verbose = (defined('WP_DEBUG') ? WP_DEBUG : false) || $verbose;
 
         if ($loggerMap !== null) {
-            $this->loggerMap = self::mergeLoggerMapOverrides($loggerMap);
-            self::validateAllLoggerMapEntries($this->loggerMap);
+            $this->loggerMap = WPCLIHandlerSupport::mergeLoggerMapOverrides($loggerMap);
+            WPCLIHandlerSupport::validateAllLoggerMapEntries($this->loggerMap);
         }
-    }
-
-    /**
-     * Merge user logger map overrides over defaults at per-level key depth.
-     *
-     * @param array $loggerMap Override entries keyed by Monolog level.
-     *
-     * @return array
-     */
-    private static function mergeLoggerMapOverrides(array $loggerMap): array
-    {
-        $defaultMap = self::getDefaultLoggerMap();
-
-        foreach ($loggerMap as $level => $entry) {
-            $level = (int)$level;
-
-            if (!isset($defaultMap[$level]) || !is_array($defaultMap[$level]) || !is_array($entry)) {
-                $defaultMap[$level] = $entry;
-                continue;
-            }
-
-            $defaultMap[$level] = array_replace($defaultMap[$level], $entry);
-        }
-
-        return $defaultMap;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isHandling(array $record): bool
+    public function isHandling(LogRecord $record): bool
     {
         // bodge for debug level as needs to always call that;
-        // WP_CLI deals with --debug command argument
-        $level = (int)$record['level'];
-        if ($level == Logger::DEBUG) {
+        // WP_CLI deals with --debug command argument.
+        if ($record->level === Level::Debug) {
             return true;
         }
 
         // check level is one we know how to handle as more could be added in the future
         // that would need mapping to the WP-CLI:: method.
+        $level = $record->level->value;
         $supported = self::getSupportedLevels($this->getLoggerMap());
         $isSupported = in_array($level, $supported, true);
 
@@ -112,18 +90,7 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function getSupportedLevels(array $map)
     {
-        $results = [];
-        // validate the supplied map and return only the valid levels
-        $levels = array_keys($map);
-        foreach ($levels as $level) {
-            try {
-                self::validateLoggerMap($map, $level, Logger::getLevelName($level));
-                $results[] = $level;
-            } catch (\Exception $e) {
-                // do nothing
-            }
-        }
-        return $results;
+        return WPCLIHandlerSupport::getSupportedLevels($map);
     }
 
     /**
@@ -131,40 +98,34 @@ class WPCLIHandler extends AbstractProcessingHandler
      *
      * @see https://seldaek.github.io/monolog/doc/message-structure.html
      *
-     * @param  array $record
+     * @param  LogRecord $record
      *
      * @return void
      * @throws \RuntimeException If a level is passed that is not currently mapped to a WP_CLI:: method.
      * @throws \InvalidArgumentException if something in $record is invalid.
      */
-    protected function write(array $record): void
+    protected function write(LogRecord $record): void
     {
-        // init vars for whatever being used
-        $level = (int)$record['level']; // no default as think it would be an error to be empty
-        $levelName = (string)$record['level_name'] ?: '';
+        $level = self::normalizeLevel($record->level);
+        $levelName = self::getLevelName($record->level);
+        $loggerMap = $this->getLoggerMap();
         $formattedMessage = $this->getFormatter()->format($record);
 
-        // build up details of calling method
-        $loggerMap = $this->getLoggerMap();
         self::validateLoggerMap($loggerMap, $level, $levelName);
 
-        $method = $loggerMap[$level]['method'];
-        $includeLevelName = isset($loggerMap[$level]['includeLevelName'])
-            ? (bool)$loggerMap[$level]['includeLevelName'] : false;
-        $exit = isset($loggerMap[$level]['exit']) ? (bool)$loggerMap[$level]['exit'] : false;
+        $entry = WPCLIHandlerSupport::getLoggerMapEntry($loggerMap, $level);
+        $method = $entry['method'];
+        $logMessage = isset($entry['includeLevelName']) && (bool) $entry['includeLevelName']
+            ? '(' . $levelName . ') ' . $formattedMessage
+            : $formattedMessage;
+        $exit = isset($entry['exit']) ? (bool) $entry['exit'] : false;
 
-        if ($includeLevelName) {
-            $logMessage = '(' . $levelName . ') ' . $formattedMessage;
-        } else {
-            $logMessage = $formattedMessage;
-        }
-
-        // call it
-        if ($method != 'error') {
+        if ($method !== 'error') {
             WP_CLI::$method($logMessage);
-        } else {
-            WP_CLI::$method($logMessage, $exit);
+            return;
         }
+
+        WP_CLI::$method($logMessage, $exit);
     }
 
     /**
@@ -172,31 +133,28 @@ class WPCLIHandler extends AbstractProcessingHandler
      *
      * Checks to make sure the logger map contains a supported log level and has an existing method in WP_CLI.
      *
-     * @param array $map The logger map to be checked.
      * @param int $level The level to be checked.
-     * @param string $levelName The name of the level for error reporting.
      *
      * @throws \InvalidArgumentException
      */
-    public static function validateLoggerMap(array $map, int $level, string $levelName = '')
+    public static function validateLoggerMap(array $map, int|string|Level $level, string $levelName = '')
     {
-        $entry = isset($map[(string)$level]) ? $map[(string)$level] : array();
-        if (empty($entry)) {
-            throw new \InvalidArgumentException(
-                'Logger map has no entry for level ' . $levelName . '(' . $level . ')'
-            );
-        }
-        if (!method_exists('WP_CLI', $entry['method'])) {
-            throw new \InvalidArgumentException(
-                'Logger map contains an invalid method for level ' . $levelName . '(' . $level . ')'
-            );
-        }
-        if ($entry['method'] !== 'error' && isset($entry['exit']) && $entry['exit'] === true) {
-            throw new \InvalidArgumentException(
-                'Logger map for level ' . $levelName . '(' . $level . ') specifies exit but
-                         exit is only valid for \'error\' method'
-            );
-        }
+        WPCLIHandlerSupport::validateLoggerMap($map, $level, $levelName);
+    }
+
+    public static function normalizeLevel(int|string|Level $level): int
+    {
+        return WPCLIHandlerSupport::normalizeLevel($level);
+    }
+
+    public static function getLevelName(int|string|Level $level): string
+    {
+        return WPCLIHandlerSupport::getLevelName($level);
+    }
+
+    public static function toMonologLevel(int|string|Level $level): ?Level
+    {
+        return WPCLIHandlerSupport::toMonologLevel($level);
     }
 
     /**
@@ -209,10 +167,7 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function validateAllLoggerMapEntries(array $map): void
     {
-        foreach (array_keys($map) as $level) {
-            $level = (int)$level;
-            self::validateLoggerMap($map, $level, Logger::getLevelName($level));
-        }
+        WPCLIHandlerSupport::validateAllLoggerMapEntries($map);
     }
 
     /**
@@ -236,42 +191,7 @@ class WPCLIHandler extends AbstractProcessingHandler
      */
     public static function getDefaultLoggerMap()
     {
-        return [
-            Logger::DEBUG => [
-                'method' => 'debug',
-            ],
-            Logger::INFO => [
-                'method' => 'log',
-            ],
-            Logger::NOTICE => [
-                'method' => 'log',
-                'includeLevelName' => true,
-            ],
-            Logger::WARNING => [
-                'method' => 'warning',
-                'includeLevelName' => true,
-            ],
-            Logger::ERROR => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => false,
-            ],
-            Logger::CRITICAL => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => true,
-            ],
-            Logger::ALERT => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => true,
-            ],
-            Logger::EMERGENCY => [
-                'method' => 'error',
-                'includeLevelName' => true,
-                'exit' => true,
-            ]
-        ];
+        return WPCLIHandlerSupport::getDefaultLoggerMap();
     }
 
     /**

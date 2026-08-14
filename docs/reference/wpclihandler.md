@@ -10,10 +10,10 @@
 ## Constructor
 
 ```php
-new WPCLIHandler($level = Logger::WARNING, $bubble = true, $verbose = false, ?array $loggerMap = null)
+new WPCLIHandler($level = Level::Warning, $bubble = true, $verbose = false, ?array $loggerMap = null)
 ```
 
-- `$level`: minimum logging level for handler triggering.
+- `$level`: minimum logging level for handler triggering. Accepts a Monolog `Level` enum case, level name string, or legacy integer level value.
 - `$bubble`: whether records continue to other handlers.
 - `$verbose`: enables verbose formatter output (also enabled by `WP_DEBUG`).
 - `$loggerMap`: optional per-level overrides merged over the default logger map.
@@ -24,17 +24,19 @@ Each map entry uses this shape:
 
 ```php
 [
-	Logger::NOTICE => [
+	Level::Notice->value => [
 		'method' => 'log',
 		'includeLevelName' => true,
 	],
-	Logger::ERROR => [
+	Level::Error->value => [
 		'method' => 'error',
 		'includeLevelName' => true,
 		'exit' => false,
 	],
 ]
 ```
+
+Map keys may use Monolog `Level` enum cases, level name strings (for example `'warning'`), or integer level values. Entries are normalised before validation.
 
 ## Default formatter behaviour
 
@@ -80,4 +82,12 @@ In this output shape, the trailing `[]` is Monolog `extra` data when no extra ke
 - `getDefaultLoggerMap(): array`
 - `getSupportedLevels(array $map): array`
 - `validateAllLoggerMapEntries(array $map): void`
-- `validateLoggerMap(array $map, int $level, string $levelName = '')`
+- `validateLoggerMap(array $map, int|string|Level $level, string $levelName = '')`
+- `normalizeLevel(int|string|Level $level): int`
+- `getLevelName(int|string|Level $level): string`
+- `toMonologLevel(int|string|Level $level): ?Level`
+
+## Constants
+
+- `WP_CLI_FORMAT_STANDARD`: `"%message%"`
+- `WP_CLI_FORMAT_VERBOSE`: `"%message% %context% %extra%"`

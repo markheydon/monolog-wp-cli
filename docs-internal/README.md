@@ -17,3 +17,7 @@ Keep entries concise and factual. Prefer one file per topic.
 - [PSR-3 to WP-CLI Level Mapping](psr3-to-wp-cli-level-mapping.md)
 - [Repository transfer and Packagist behaviour](repository-transfer-and-packagist.md)
 - [README and badge policy](readme-and-badges.md)
+
+## Planned Updates
+
+- [Upgrade from Monolog v2 to v3](upgrade-from-monolog-v2-to-v3.md)

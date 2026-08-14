@@ -2,6 +2,7 @@
 
 [![Packagist Version](https://img.shields.io/packagist/v/mhcg/monolog-wp-cli.svg)](https://packagist.org/packages/mhcg/monolog-wp-cli)
 [![PHP CI](https://github.com/markheydon/monolog-wp-cli/actions/workflows/php.yml/badge.svg?branch=main)](https://github.com/markheydon/monolog-wp-cli/actions/workflows/php.yml)
+[![CI](https://github.com/markheydon/monolog-wp-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/markheydon/monolog-wp-cli/actions/workflows/ci.yml)
 
 Extension for [Monolog](https://github.com/Seldaek/monolog) that routes log output through WP-CLI when running `wp` commands.
 
@@ -13,10 +14,10 @@ composer require mhcg/monolog-wp-cli
 
 ## Requirements
 
-- PHP `^7.2 || ^8.0`
-- monolog/monolog `^2.5`
+- PHP `^8.1`
+- monolog/monolog `^3.0`
 
-Current stable releases target the Monolog 2 line. Monolog 3 support remains planned for a future major release.
+Current stable releases target the Monolog 3 line. The v2.x branch is maintained separately for Monolog 2 users and receives critical fixes.
 
 Official WordPress-runtime support is maintained separately from the package runtime floor. The current policy supports the current and previous WordPress major series through an explicit smoke-test tuple list rather than a blanket WordPress/PHP cross-product claim.
 
@@ -36,13 +37,15 @@ From v2.2, default `NOTICE` handling changed from `WP_CLI::warning()` to `WP_CLI
 If you need previous behaviour, pass a custom logger map override as the fourth `WPCLIHandler` constructor argument:
 
 ```php
+use Monolog\Level;
+
 $log->pushHandler(
     new WPCLIHandler(
-        Logger::INFO,
+        Level::Info,
         true,
         false,
         [
-            Logger::NOTICE => [
+            Level::Notice->value => [
                 'method' => 'warning',
                 'includeLevelName' => true,
             ],
@@ -54,12 +57,13 @@ $log->pushHandler(
 ```php
 <?php
 
+use Monolog\Level;
 use Monolog\Logger;
 use MHCG\Monolog\Handler\WPCLIHandler;
 
 // Create a log channel.
 $log = new Logger('name');
-$log->pushHandler(new WPCLIHandler(Logger::WARNING));
+$log->pushHandler(new WPCLIHandler(Level::Warning));
 
 // Output to WP-CLI.
 $log->warning('This is a warning');
@@ -72,7 +76,7 @@ $log->info('General logging - will not be shown when running wp with --quiet');
 If you want Monolog `context` and `extra` data included in the output, enable verbose formatting:
 
 ```php
-$log->pushHandler(new WPCLIHandler(Logger::WARNING, true, true));
+$log->pushHandler(new WPCLIHandler(Level::Warning, true, true));
 $log->warning('This includes context in verbose mode', ['job' => 'import']);
 ```
 
@@ -90,6 +94,7 @@ This demonstrates the handler only. It is not a recommended project structure fo
 
 // my-plugin.php
 
+use Monolog\Level;
 use Monolog\Logger;
 use MHCG\Monolog\Handler\WPCLIHandler;
 
@@ -110,7 +115,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
     function mycommand_command( $args ) {
         // Create logger.
         $log = new Logger( 'name' );
-        $log->pushHandler( new WPCLIHandler( Logger::INFO ) );
+        $log->pushHandler( new WPCLIHandler( Level::Info ) );
 
         // Will only show when wp is run with --debug.
         $log->debug( 'Some geeky stuff' );
@@ -185,7 +190,7 @@ WORDPRESS_VERSION=6.8 WORDPRESS_PHP_VERSION=8.4 composer run test:wp
 
 CI runs on pull requests and pushes to `main`.
 
-- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 7.2 to 8.5, runs unit tests across PHP 7.2 to 8.5 using a compatible PHPUnit line per PHP version, runs dependency audit, PHPMD, and PHPCS on PHP 8.3, and runs a dedicated WordPress smoke matrix for the repository's officially supported WordPress/PHP tuples.
+- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 8.1 to 8.5, runs unit tests across PHP 8.1 to 8.5 using a compatible PHPUnit line per PHP version, runs dependency audit, PHPMD, and PHPCS on PHP 8.3, and runs a dedicated WordPress smoke matrix for the repository's officially supported WordPress/PHP tuples.
 
 For the reasoning behind the support window and tuple-based WordPress policy, see [Compatibility and release-line policy](docs/explanation/compatibility-and-release-line-policy.md).
 

@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        php-version: ['8.1', '8.2', '8.3', '8.4', '8.5']
 
     name: Runtime PHP ${{ matrix.php-version }}
 
@@ -52,18 +52,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            php-version: '7.2'
-            phpunit-version: '^8.5'
-          - os: ubuntu-latest
-            php-version: '7.3'
-            phpunit-version: '^9.6'
-          - os: ubuntu-latest
-            php-version: '7.4'
-            phpunit-version: '^9.6'
-          - os: ubuntu-latest
-            php-version: '8.0'
-            phpunit-version: '^9.6'
           - os: ubuntu-latest
             php-version: '8.1'
             phpunit-version: '^9.6'
@@ -150,6 +138,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

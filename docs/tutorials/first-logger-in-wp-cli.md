@@ -10,6 +10,7 @@ By the end, you will run a command and see warning and error output through WP-C
 
 - A project where WP-CLI commands run.
 - Composer available.
+- PHP `^8.1` and `monolog/monolog` `^3.0` (the current package release line).
 
 ## 1. Install the package
 
@@ -24,12 +25,13 @@ Use Monolog with the handler and emit a few levels:
 ```php
 <?php
 
+use Monolog\Level;
 use Monolog\Logger;
 use MHCG\Monolog\Handler\WPCLIHandler;
 
 function mycommand_command( $args ) {
     $log = new Logger( 'mycommand' );
-    $log->pushHandler( new WPCLIHandler( Logger::INFO ) );
+    $log->pushHandler( new WPCLIHandler( Level::Info ) );
 
     $log->debug( 'Only shown with --debug' );
     $log->info( 'Started running' );
@@ -68,7 +70,7 @@ Expected behaviour:
 By default, output uses message-only formatting. To include Monolog `context` and `extra` data, enable verbose mode:
 
 ```php
-$log->pushHandler( new WPCLIHandler( Logger::INFO, true, true ) );
+$log->pushHandler( new WPCLIHandler( Level::Info, true, true ) );
 $log->notice( 'Import completed', [ 'items' => 5 ] );
 ```
 

@@ -28,7 +28,6 @@ services:
       - "${WORDPRESS_HTTP_PORT:-8080}:80"
     volumes:
       - wordpress_data:/var/www/html
-      - project_data:/workspaces/monolog-wp-cli
 
   wpcli:
     image: wordpress:cli-php${WORDPRESS_PHP_VERSION:-8.4}
@@ -44,9 +43,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - wordpress_data:/var/www/html
-      - project_data:/workspaces/monolog-wp-cli
 
 volumes:
   db_data:
   wordpress_data:
-  project_data:
