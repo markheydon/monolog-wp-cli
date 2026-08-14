@@ -120,6 +120,7 @@ class WPCLIHandlerTest extends TestCase
         $this->sanityCheck();
 
         $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('WP-CLI');
         $var = self::getHandleObjectForStandardTest();
         $this->assertTrue(is_object($var));
         unset($var);
@@ -374,6 +375,25 @@ class WPCLIHandlerTest extends TestCase
             $this->fail('Expected InvalidArgumentException was not thrown.');
         } catch (\InvalidArgumentException $e) {
             $this->assertStringContainsString('has no entry for level', $e->getMessage());
+        }
+    }
+
+    /**
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::validateLoggerMap
+     */
+    public function testValidateLoggerMapMissingMethod()
+    {
+        $map = [
+            Level::Debug->value => [
+                'includeLevelName' => true,
+            ],
+        ];
+
+        try {
+            WPCLIHandler::validateLoggerMap($map, Level::Debug, 'DEBUG');
+            $this->fail('Expected InvalidArgumentException was not thrown.');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertStringContainsString('no method', $e->getMessage());
         }
     }
 
@@ -875,6 +895,108 @@ class WPCLIHandlerTest extends TestCase
     }
 
     /**
+     * Test that ALERT routes through WP_CLI::error and requests exit.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testHandlerRoutesAlertToErrorAndExits()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler(self::getHandleObjectForStandardTest());
+
+        try {
+            $logger->alert('Alert failure');
+            $this->fail('Expected alert logging to request exit.');
+        } catch (\MHCGDev\Monolog\Stubs\MockExitException $exception) {
+            $this->assertSame(1, $exception->getCode());
+        }
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(1, $calls);
+        $this->assertSame('error', $calls[0]['method']);
+        $this->assertTrue($calls[0]['exit']);
+        $this->assertStringContainsString('(ALERT)', $calls[0]['message']);
+        $this->assertStringContainsString('Alert failure', $calls[0]['message']);
+
+        unset($logger);
+    }
+
+    /**
+     * Test that EMERGENCY routes through WP_CLI::error and requests exit.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testHandlerRoutesEmergencyToErrorAndExits()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler(self::getHandleObjectForStandardTest());
+
+        try {
+            $logger->emergency('Emergency failure');
+            $this->fail('Expected emergency logging to request exit.');
+        } catch (\MHCGDev\Monolog\Stubs\MockExitException $exception) {
+            $this->assertSame(1, $exception->getCode());
+        }
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(1, $calls);
+        $this->assertSame('error', $calls[0]['method']);
+        $this->assertTrue($calls[0]['exit']);
+        $this->assertStringContainsString('(EMERGENCY)', $calls[0]['message']);
+        $this->assertStringContainsString('Emergency failure', $calls[0]['message']);
+
+        unset($logger);
+    }
+
+    /**
+     * Test write() resolves logger-map entries when levels use string keys.
+     *
+     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
+     */
+    public function testWriteResolvesStringKeyedLoggerMapEntry()
+    {
+        $this->sanityCheck();
+
+        $this->pretendToBeInWPCLI();
+        \WP_CLI::resetCalls();
+
+        $handler = self::getHandleObjectForStandardTest();
+        $loggerMap = new \ReflectionProperty(WPCLIHandler::class, 'loggerMap');
+        $loggerMap->setAccessible(true);
+        $loggerMap->setValue($handler, [
+            'warning' => [
+                'method' => 'warning',
+                'includeLevelName' => true,
+            ],
+        ]);
+
+        $logger = self::getLoggerObjectForStandardTest();
+        $logger->pushHandler($handler);
+        $logger->warning('String-keyed map warning');
+
+        $calls = \WP_CLI::getCalls();
+
+        $this->assertCount(1, $calls);
+        $this->assertSame('warning', $calls[0]['method']);
+        $this->assertStringContainsString('(WARNING)', $calls[0]['message']);
+        $this->assertStringContainsString('String-keyed map warning', $calls[0]['message']);
+
+        unset($logger);
+    }
+
+    /**
      * Test that a partial custom logger map is merged over the defaults.
      *
      * @covers \MHCG\Monolog\Handler\WPCLIHandler::__construct
@@ -914,66 +1036,6 @@ class WPCLIHandlerTest extends TestCase
         $this->assertStringContainsString('(NOTICE)', $calls[1]['message']);
 
         unset($logger);
-    }
-
-    /**
-     * Test that Logger::critical() DOES throw an error using WPCLIHander.
-     *
-     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
-     */
-    public function disabledtestHandlerOkForCritical()
-    {
-        $this->sanityCheck();
-
-        $this->pretendToBeInWPCLI();
-        $logger = self::getLoggerObjectForStandardTest();
-        $logger->pushHandler(self::getHandleObjectForStandardTest());
-
-        $this->expectException('ExitException');
-        $logger->critical('This is the end...');
-
-        unset($logger);
-        $this->assertTrue(true);
-    }
-
-    /**
-     * Test that Logger::alert() DOES throw an error using WPCLIHander.
-     *
-     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
-     */
-    public function disabledtestHandlerOkForAlert()
-    {
-        $this->sanityCheck();
-
-        $this->pretendToBeInWPCLI();
-        $logger = self::getLoggerObjectForStandardTest();
-        $logger->pushHandler(self::getHandleObjectForStandardTest());
-
-        $this->expectException('ExitException');
-        $logger->alert('This is the end...');
-
-        unset($logger);
-        $this->assertTrue(true);
-    }
-
-    /**
-     * Test that Logger::emergency() DOES throw an error using WPCLIHander.
-     *
-     * @covers \MHCG\Monolog\Handler\WPCLIHandler::write
-     */
-    public function disabledtestHandlerOkForEmergency()
-    {
-        $this->sanityCheck();
-
-        $this->pretendToBeInWPCLI();
-        $logger = self::getLoggerObjectForStandardTest();
-        $logger->pushHandler(self::getHandleObjectForStandardTest());
-
-        $this->expectException('ExitException');
-        $logger->emergency('This is the end...');
-
-        unset($logger);
-        $this->assertTrue(true);
     }
     //</editor-fold>
 }

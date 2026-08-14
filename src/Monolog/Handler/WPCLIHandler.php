@@ -48,7 +48,7 @@ class WPCLIHandler extends AbstractProcessingHandler
         ?array $loggerMap = null
     ) {
         if (!defined('WP_CLI') || !WP_CLI) {
-            throw new \RuntimeException('');
+            throw new \RuntimeException('WPCLIHandler can only be used when WP-CLI is available.');
         }
 
         parent::__construct($level, $bubble);
@@ -113,11 +113,12 @@ class WPCLIHandler extends AbstractProcessingHandler
 
         self::validateLoggerMap($loggerMap, $level, $levelName);
 
-        $method = $loggerMap[$level]['method'];
-        $logMessage = isset($loggerMap[$level]['includeLevelName']) && (bool) $loggerMap[$level]['includeLevelName']
+        $entry = WPCLIHandlerSupport::getLoggerMapEntry($loggerMap, $level);
+        $method = $entry['method'];
+        $logMessage = isset($entry['includeLevelName']) && (bool) $entry['includeLevelName']
             ? '(' . $levelName . ') ' . $formattedMessage
             : $formattedMessage;
-        $exit = isset($loggerMap[$level]['exit']) ? (bool) $loggerMap[$level]['exit'] : false;
+        $exit = isset($entry['exit']) ? (bool) $entry['exit'] : false;
 
         if ($method !== 'error') {
             WP_CLI::$method($logMessage);

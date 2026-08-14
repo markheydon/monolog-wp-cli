@@ -16,6 +16,12 @@
     }
   ],
   "type": "library",
+  "extra": {
+    "branch-alias": {
+      "dev-main": "3.x-dev",
+      "dev-upgrade-to-monolog3": "3.x-dev"
+    }
+  },
   "require": {
     "php": "^8.1",
     "monolog/monolog": "^3.0"
@@ -24,7 +30,7 @@
     "wp-cli/wp-cli": "^2.12",
     "phpunit/phpunit": "^8.5 || ^9.6 || ^12.5",
     "phpmd/phpmd": "^2.15",
-    "squizlabs/php_codesniffer": "^3.11 || ^4.0"
+    "squizlabs/php_codesniffer": "^3.13.6 || ^4.0.2"
   },
   "autoload": {
     "psr-4": {

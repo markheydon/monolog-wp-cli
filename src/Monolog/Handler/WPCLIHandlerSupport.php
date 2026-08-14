@@ -226,6 +226,19 @@ class WPCLIHandlerSupport
         };
     }
 
+    /**
+     * Resolve a logger-map entry for a normalized Monolog level value.
+     *
+     * @param array $map Logger map containing mappings.
+     * @param int|string $levelValue Normalized Monolog level value.
+     *
+     * @return array<string, mixed>
+     */
+    public static function getLoggerMapEntry(array $map, int|string $levelValue): array
+    {
+        return self::getLoggerMapEntryForLevel($map, $levelValue);
+    }
+
     private static function getLoggerMapEntryForLevel(array $map, int|string $levelValue): array
     {
         if (isset($map[(string) $levelValue])) {
@@ -251,6 +264,12 @@ class WPCLIHandlerSupport
 
     private static function validateLoggerMapEntry(array $entry, string $levelName, int|string $levelValue): void
     {
+        if (!isset($entry['method']) || !is_string($entry['method']) || $entry['method'] === '') {
+            throw new \InvalidArgumentException(
+                'Logger map contains no method for level ' . $levelName . '(' . $levelValue . ')'
+            );
+        }
+
         if (!method_exists('WP_CLI', $entry['method'])) {
             throw new \InvalidArgumentException(
                 'Logger map contains an invalid method for level ' . $levelName . '(' . $levelValue . ')'

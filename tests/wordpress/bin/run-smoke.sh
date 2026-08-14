@@ -6,7 +6,7 @@ COMPOSE_FILE="$ROOT_DIR/tests/wordpress/docker-compose.yml"
 COMPOSE_DIR="$(dirname "$COMPOSE_FILE")"
 WORDPRESS_VERSION="${WORDPRESS_VERSION:-7.0}"
 WORDPRESS_PHP_VERSION="${WORDPRESS_PHP_VERSION:-8.4}"
-WP=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE" run --rm wpcli wp)
+WP=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE" run --rm --entrypoint wp wpcli)
 
 echo "Running smoke checks for WordPress ${WORDPRESS_VERSION} on PHP ${WORDPRESS_PHP_VERSION}."
 

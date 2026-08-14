@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ee7dcc6213470f042588c4e5ae2291e",
+    "content-hash": "2f621a3d993cc7fdedcb2c4f03ede576",
     "packages": [
         {
             "name": "mhcg/monolog-wp-cli",
@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../../..",
-                "reference": "e0e1f2454cf67a27e249575c33eb7a8e8965ce5b"
+                "reference": "79f84ce2468e72b4246e9956b694a3ab7960287c"
             },
             "require": {
                 "monolog/monolog": "^3.0",
@@ -25,6 +25,12 @@
                 "wp-cli/wp-cli": "^2.12"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.x-dev",
+                    "dev-upgrade-to-monolog3": "3.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "MHCG\\Monolog\\": "src/Monolog"
@@ -258,7 +264,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "mhcg/monolog-wp-cli": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

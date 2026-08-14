@@ -9,14 +9,23 @@ WORDPRESS_PHP_VERSION="${WORDPRESS_PHP_VERSION:-8.4}"
 WORDPRESS_HTTP_PORT="${WORDPRESS_HTTP_PORT:-8080}"
 WORDPRESS_URL="${WORDPRESS_URL:-http://localhost:${WORDPRESS_HTTP_PORT}}"
 FIXTURE_DIR="$ROOT_DIR/tests/wordpress/fixtures/monolog-wp-cli-smoke"
+FIXTURE_BUILD_DIR="$(mktemp -d)"
 PLUGIN_DST_DIR="/var/www/html/wp-content/plugins/monolog-wp-cli-smoke"
-WP=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE" run --rm wpcli wp)
+WP=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE" run --rm --entrypoint wp wpcli)
 COMPOSE=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE")
+
+cleanup() {
+  rm -rf "$FIXTURE_BUILD_DIR"
+}
+trap cleanup EXIT
 
 echo "Setting up WordPress ${WORDPRESS_VERSION} on PHP ${WORDPRESS_PHP_VERSION}."
 
+rsync -a --exclude vendor/ "$FIXTURE_DIR/" "$FIXTURE_BUILD_DIR/"
+
 (
-  cd "$FIXTURE_DIR"
+  cd "$FIXTURE_BUILD_DIR"
+  sed -i "s#\"url\": \"../../../..\"#\"url\": \"${ROOT_DIR}\"#" composer.json
   composer update mhcg/monolog-wp-cli --no-dev --no-interaction
 )
 
@@ -30,7 +39,7 @@ echo "Setting up WordPress ${WORDPRESS_VERSION} on PHP ${WORDPRESS_PHP_VERSION}.
 
 "${COMPOSE[@]}" exec -T wordpress rm -rf "$PLUGIN_DST_DIR"
 "${COMPOSE[@]}" exec -T wordpress mkdir -p "$PLUGIN_DST_DIR"
-tar -C "$FIXTURE_DIR" -cf - . | "${COMPOSE[@]}" exec -T -i wordpress tar -C "$PLUGIN_DST_DIR" -xf -
+tar -C "$FIXTURE_BUILD_DIR" -cf - . | "${COMPOSE[@]}" exec -T -i wordpress tar -C "$PLUGIN_DST_DIR" -xf -
 
 "${WP[@]}" plugin activate monolog-wp-cli-smoke >/dev/null
 
