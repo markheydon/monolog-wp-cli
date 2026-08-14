@@ -87,9 +87,23 @@ resolve_runtime() {
     fi
 }
 
-volume_suffix() {
+volume_mount() {
+    local host_path="$1"
+    local container_path="$2"
+    local opts="${3:-}"
+
     if [[ "$RUNTIME" == "podman" ]]; then
-        printf ':Z'
+        if [[ -n "$opts" ]]; then
+            opts="${opts},Z"
+        else
+            opts="Z"
+        fi
+    fi
+
+    if [[ -n "$opts" ]]; then
+        printf '%s:%s:%s' "$host_path" "$container_path" "$opts"
+    else
+        printf '%s:%s' "$host_path" "$container_path"
     fi
 }
 
@@ -102,7 +116,7 @@ hugo_build() {
     fi
 
     "$RUNTIME" run --rm \
-        -v "${REPO_ROOT}:/src$(volume_suffix)" \
+        -v "$(volume_mount "$REPO_ROOT" /src)" \
         -w /src/website \
         "$HUGO_IMAGE" \
         hugo "${hugo_args[@]}"
@@ -124,7 +138,7 @@ case "$COMMAND" in
     serve)
         echo "Starting Hugo dev server at http://localhost:${SERVE_PORT} ..."
         "$RUNTIME" run --rm -p "${SERVE_PORT}:1313" \
-            -v "${REPO_ROOT}:/src$(volume_suffix)" \
+            -v "$(volume_mount "$REPO_ROOT" /src)" \
             -w /src/website \
             "$HUGO_IMAGE" \
             hugo server --bind 0.0.0.0 --baseURL "http://localhost:${SERVE_PORT}"
@@ -134,7 +148,7 @@ case "$COMMAND" in
         hugo_build "http://localhost:${PREVIEW_PORT}/"
         echo "Serving website/public at http://localhost:${PREVIEW_PORT} ..."
         "$RUNTIME" run --rm -p "${PREVIEW_PORT}:80" \
-            -v "${REPO_ROOT}/website/public:/usr/share/nginx/html:ro$(volume_suffix)" \
+            -v "$(volume_mount "$REPO_ROOT/website/public" /usr/share/nginx/html ro)" \
             "$NGINX_IMAGE"
         ;;
 esac
