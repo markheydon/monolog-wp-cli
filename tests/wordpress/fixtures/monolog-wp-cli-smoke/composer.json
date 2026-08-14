@@ -13,7 +13,10 @@
       "type": "path",
       "url": "../../../..",
       "options": {
-        "symlink": false
+        "symlink": false,
+        "versions": {
+          "mhcg/monolog-wp-cli": "3.x-dev"
+        }
       }
     }
   ],
