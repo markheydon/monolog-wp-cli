@@ -1,26 +1,27 @@
-# Public Documentation
+# Maintainer documentation
 
-This documentation is organised using Diataxis so each page has one primary job.
+Internal and technical reference notes for maintainers and coding agents.
 
-## Tutorials
+Use this folder for:
 
-- [First logger in WP-CLI](tutorials/first-logger-in-wp-cli.md): Learn by building a minimal working setup.
+- Operational decisions and rationale.
+- Repository maintenance policies.
+- Historical context that should not be lost between sessions.
 
-## How-to guides
+Keep entries concise and factual. Prefer one file per topic.
 
-- [Use WPCLIHandler in a command](how-to/use-wpclihandler-in-a-command.md): Complete a focused implementation task.
-- [Test under WordPress and WP-CLI](how-to/test-under-wordpress.md): Run the real-runtime integration smoke workflow locally or against a supported WordPress/PHP tuple.
+Public user documentation lives in [`website/content/`](../website/content/).
 
-## Reference
+## Index
 
-- [WPCLIHandler reference](reference/wpclihandler.md): Behaviour, level mapping, and formatter details.
+- [Package identity and naming](package-identity.md)
+- [PHP version strategy](php-version-strategy.md)
+- [WordPress runtime support policy](wordpress-support-policy.md)
+- [PSR-3 to WP-CLI level mapping](psr3-to-wp-cli-level-mapping.md)
+- [Repository transfer and Packagist behaviour](repository-transfer-and-packagist.md)
+- [README and badge policy](readme-and-badges.md)
+- [Test under WordPress and WP-CLI](test-under-wordpress.md)
 
-## Explanation
+## Planned updates
 
-- [Compatibility and release-line policy](explanation/compatibility-and-release-line-policy.md): Why package runtime compatibility and WordPress-runtime support are described separately.
-
-## Scope
-
-Public docs in this folder are for package users and contributors.
-
-Maintainer-only operational notes remain in `docs-internal/`.
+- [Upgrade from Monolog v2 to v3](upgrade-from-monolog-v2-to-v3.md)

@@ -1,0 +1,84 @@
+---
+title: First logger in WP-CLI
+weight: 10
+---
+
+This tutorial walks through a minimal setup that sends Monolog output to WP-CLI.
+
+## Goal
+
+By the end, you will run a command and see warning and error output through WP-CLI.
+
+## Before you start
+
+- A project where WP-CLI commands run.
+- Composer available.
+- PHP `^8.1` and `monolog/monolog` `^3.0` (the current package release line).
+
+## 1. Install the package
+
+```shell
+composer require mhcg/monolog-wp-cli
+```
+
+## 2. Create a command callback
+
+Use Monolog with the handler and emit a few levels:
+
+```php
+<?php
+
+use Monolog\Level;
+use Monolog\Logger;
+use MHCG\Monolog\Handler\WPCLIHandler;
+
+function mycommand_command( $args ) {
+    $log = new Logger( 'mycommand' );
+    $log->pushHandler( new WPCLIHandler( Level::Info ) );
+
+    $log->debug( 'Only shown with --debug' );
+    $log->info( 'Started running' );
+    $log->warning( 'Something happened of note' );
+    $log->error( 'An error has occurred' );
+}
+
+WP_CLI::add_command( 'mycommand', 'mycommand_command' );
+```
+
+## 3. Run the command
+
+```shell
+wp mycommand
+```
+
+Expected behaviour:
+
+- `debug` is hidden unless `--debug` is used.
+- `info` and `warning` are normal command output.
+- `error` appears as an error message.
+
+## 4. Check quiet mode
+
+```shell
+wp mycommand --quiet
+```
+
+Expected behaviour:
+
+- Normal output is suppressed.
+- Error output still appears.
+
+## 5. Enable context output when needed
+
+By default, output uses message-only formatting. To include Monolog `context` and `extra` data, enable verbose mode:
+
+```php
+$log->pushHandler( new WPCLIHandler( Level::Info, true, true ) );
+$log->notice( 'Import completed', [ 'items' => 5 ] );
+```
+
+You can also enable verbose output by setting `WP_DEBUG` to true in the runtime.
+
+## Next step
+
+If you already have an existing command and only need integration steps, continue with [Use WPCLIHandler in a command](/docs/how-to/use-wpclihandler-in-a-command/).

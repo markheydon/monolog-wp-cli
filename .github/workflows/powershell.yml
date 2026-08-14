@@ -1,0 +1,40 @@
+name: PowerShell lint
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'PSScriptAnalyzerSettings.psd1'
+      - '.github/workflows/powershell.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'PSScriptAnalyzerSettings.psd1'
+      - '.github/workflows/powershell.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  psscriptanalyzer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Analyse PowerShell scripts
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1 -Severity Warning, Error
+          if ($results) {
+            $results | Format-Table -AutoSize
+            Write-Error "PSScriptAnalyzer found $($results.Count) issue(s)."
+          }

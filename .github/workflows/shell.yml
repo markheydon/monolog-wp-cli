@@ -1,0 +1,38 @@
+name: Shell lint
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'tests/wordpress/bin/**'
+      - '.github/workflows/shell.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'tests/wordpress/bin/**'
+      - '.github/workflows/shell.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Analyse shell scripts
+        run: |
+          mapfile -t scripts < <(find scripts tests/wordpress/bin -name '*.sh' -type f | sort)
+          if ((${#scripts[@]} == 0)); then
+            echo "No shell scripts found."
+            exit 0
+          fi
+          shellcheck "${scripts[@]}"

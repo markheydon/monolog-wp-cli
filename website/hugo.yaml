@@ -1,0 +1,54 @@
+# Hugo configuration for monolog-wp-cli documentation site.
+baseURL: https://markheydon.me.uk/monolog-wp-cli/
+defaultContentLanguage: en
+languages:
+  en:
+    label: English (UK)
+    locale: en-GB
+    weight: 1
+title: Monolog WP-CLI Handler
+
+module:
+  imports:
+    - path: github.com/imfing/hextra
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    noClasses: false
+
+caches:
+  images:
+    dir: :cacheDir/images
+
+menu:
+  main:
+    - name: Documentation
+      pageRef: /docs
+      weight: 1
+    - name: Search
+      weight: 2
+      params:
+        type: search
+    - name: GitHub
+      weight: 3
+      url: https://github.com/markheydon/monolog-wp-cli
+      params:
+        icon: github
+
+params:
+  description: Monolog handler that routes log output through WP-CLI
+
+  navbar:
+    displayTitle: true
+    displayLogo: false
+
+  footer:
+    displayCopyright: true
+    displayPoweredBy: true
+
+  editURL:
+    enable: true
+    base: https://github.com/markheydon/monolog-wp-cli/edit/main/website/content
