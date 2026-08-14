@@ -1,0 +1,23 @@
+{
+  "name": "mhcg/monolog-wp-cli-smoke-fixture",
+  "description": "WordPress smoke fixture that consumes mhcg/monolog-wp-cli via Composer.",
+  "type": "project",
+  "require": {
+    "php": "^8.1",
+    "mhcg/monolog-wp-cli": "*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../../..",
+      "options": {
+        "symlink": false
+      }
+    }
+  ],
+  "config": {
+    "sort-packages": true
+  }
+}

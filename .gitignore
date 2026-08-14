@@ -1,5 +1,6 @@
 composer.phar
 /vendor/
+/tests/wordpress/fixtures/monolog-wp-cli-smoke/vendor/
 /build/
 /coverage/
 /.php-cs-fixer.cache

@@ -17,7 +17,17 @@ if (!(defined('WP_CLI') && WP_CLI)) {
 }
 
 if (!class_exists('MHCG\\Monolog\\Handler\\WPCLIHandler')) {
-    require_once '/workspaces/monolog-wp-cli/vendor/autoload.php';
+    $autoload = __DIR__ . '/vendor/autoload.php';
+
+    if (!is_readable($autoload)) {
+        WP_CLI::error(
+            'Composer autoload not found. Run composer install in tests/wordpress/fixtures/monolog-wp-cli-smoke.'
+        );
+
+        return;
+    }
+
+    require_once $autoload;
 }
 
 WP_CLI::add_command('monolog-smoke', static function (array $args, array $assocArgs): void {
