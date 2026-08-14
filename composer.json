@@ -65,9 +65,10 @@
       "@lint"
     ]
   },
+  "homepage": "https://markheydon.me.uk/monolog-wp-cli/",
   "support": {
     "issues": "https://github.com/markheydon/monolog-wp-cli/issues",
-    "wiki": "https://github.com/markheydon/monolog-wp-cli/wiki",
+    "docs": "https://markheydon.me.uk/monolog-wp-cli/",
     "source": "https://github.com/markheydon/monolog-wp-cli"
   }
 }

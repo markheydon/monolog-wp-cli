@@ -149,7 +149,11 @@ wp mycommand --quiet
 Error: (ERROR) An error has occurred
 ```
 
-For full mapping and override details, see [WPCLIHandler reference](docs/reference/wpclihandler.md).
+For full mapping and override details, see the [WPCLIHandler reference](https://markheydon.me.uk/monolog-wp-cli/docs/reference/wpclihandler/).
+
+## Documentation
+
+Full documentation is published at <https://markheydon.me.uk/monolog-wp-cli/>.
 
 ## Development
 
@@ -192,7 +196,7 @@ CI runs on pull requests and pushes to `main`.
 
 - `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 8.1 to 8.5, runs unit tests across PHP 8.1 to 8.5 using a compatible PHPUnit line per PHP version, runs dependency audit, PHPMD, and PHPCS on PHP 8.3, and runs a dedicated WordPress smoke matrix for the repository's officially supported WordPress/PHP tuples.
 
-For the reasoning behind the support window and tuple-based WordPress policy, see [Compatibility and release-line policy](docs/explanation/compatibility-and-release-line-policy.md).
+For the reasoning behind the support window and tuple-based WordPress policy, see [Compatibility and release-line policy](https://markheydon.me.uk/monolog-wp-cli/docs/explanation/compatibility-and-release-line-policy/).
 
 ## Testing and code quality
 
@@ -204,14 +208,14 @@ For the reasoning behind the support window and tuple-based WordPress policy, se
 
 Fork the repository and open a pull request for code changes, referencing the related issue where relevant. For maintainer expectations, see [CONTRIBUTING](.github/CONTRIBUTING.md).
 
-Documentation improvements are also welcome through the project wiki.
+Documentation improvements are welcome via pull request. Edit `website/content/` and preview with `.\scripts\Invoke-HugoSite.ps1 serve`. See [CONTRIBUTING](.github/CONTRIBUTING.md).
 
 Please follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 
 ## Support
 
+- Documentation: <https://markheydon.me.uk/monolog-wp-cli/>
 - Issues: <https://github.com/markheydon/monolog-wp-cli/issues>
-- Wiki: <https://github.com/markheydon/monolog-wp-cli/wiki>
 - Source: <https://github.com/markheydon/monolog-wp-cli>
 
 ## Licence

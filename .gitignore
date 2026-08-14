@@ -6,3 +6,9 @@ composer.phar
 /.php-cs-fixer.cache
 /.phpunit.result.cache
 *.cache
+
+# Hugo site
+/website/public/
+/website/resources/
+.hugo_build.lock
+/website/.hugo_build.lock
