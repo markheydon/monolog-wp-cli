@@ -34,11 +34,20 @@ function Invoke-HugoBuild {
     .SYNOPSIS
     Builds the Hugo site into website/public using a containerized Hugo runtime.
     #>
+    param(
+        [string]$BaseURL
+    )
+
+    $hugoArgs = @("--minify")
+    if ($BaseURL) {
+        $hugoArgs += @("--baseURL", $BaseURL)
+    }
+
     & $Runtime run --rm `
         -v "${rootForMount}:/src:Z" `
         -w /src/website `
         docker.io/hugomods/hugo:latest `
-        hugo --minify
+        hugo @hugoArgs
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Hugo build failed (exit $LASTEXITCODE). Fix errors above before previewing."
     }
@@ -68,7 +77,7 @@ switch ($Command) {
 
     "preview" {
         Write-Host "Building Hugo site..." -ForegroundColor Cyan
-        Invoke-HugoBuild
+        Invoke-HugoBuild -BaseURL "http://localhost:$PreviewPort/"
         Write-Host "Serving website/public at http://localhost:$PreviewPort ..." -ForegroundColor Cyan
         & $Runtime run --rm -p "${PreviewPort}:80" `
             -v "${rootForMount}/website/public:/usr/share/nginx/html:ro,Z" `
