@@ -20,9 +20,11 @@ From the repository root:
 Other commands:
 
 ```powershell
-.\scripts\Invoke-HugoSite.ps1 build    # output to website/public/
-.\scripts\Invoke-HugoSite.ps1 preview  # static build + nginx on port 8080
+.\scripts\Invoke-HugoSite.ps1 build    # production-parity output to website/public/ (CI uses hugo.yaml baseURL)
+.\scripts\Invoke-HugoSite.ps1 preview  # local static preview via nginx (overrides baseURL for localhost)
 ```
+
+Use `serve` or `preview` for browser checks. A plain `build` followed by serving `website/public/` at the site root will break CSS and navigation links because asset paths include the `/monolog-wp-cli/` prefix from `hugo.yaml`.
 
 With a local Hugo Extended install:
 

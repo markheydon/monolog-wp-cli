@@ -55,7 +55,14 @@ composer run test:wp
 For documentation site changes:
 
 ```powershell
+# CI/production-parity build (uses hugo.yaml baseURL — not for local browser preview)
 .\scripts\Invoke-HugoSite.ps1 build
+
+# Local browser preview with correct asset paths (recommended for visual checks)
+.\scripts\Invoke-HugoSite.ps1 preview -Runtime docker
+
+# Live dev server with hot reload
+.\scripts\Invoke-HugoSite.ps1 serve -Runtime docker
 ```
 
 ## Project skills
