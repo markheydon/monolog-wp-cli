@@ -11,17 +11,22 @@ Published at [markheydon.me.uk/monolog-wp-cli](https://markheydon.me.uk/monolog-
 
 ## Local preview
 
-From the repository root:
+From the repository root, use either helper script (both wrap the same containerised Hugo commands):
+
+**Bash / zsh / WSL** (no PowerShell required):
+
+```shell
+./scripts/invoke-hugo-site.sh serve
+./scripts/invoke-hugo-site.sh preview   # static build + nginx on port 8080
+./scripts/invoke-hugo-site.sh build     # production-parity output to website/public/
+```
+
+**PowerShell** (Windows):
 
 ```powershell
 .\scripts\Invoke-HugoSite.ps1 serve
-```
-
-Other commands:
-
-```powershell
-.\scripts\Invoke-HugoSite.ps1 build    # production-parity output to website/public/ (CI uses hugo.yaml baseURL)
-.\scripts\Invoke-HugoSite.ps1 preview  # local static preview via nginx (overrides baseURL for localhost)
+.\scripts\Invoke-HugoSite.ps1 preview
+.\scripts\Invoke-HugoSite.ps1 build
 ```
 
 Use `serve` or `preview` for browser checks. A plain `build` followed by serving `website/public/` at the site root will break CSS and navigation links because asset paths include the `/monolog-wp-cli/` prefix from `hugo.yaml`.

@@ -208,7 +208,7 @@ For the reasoning behind the support window and tuple-based WordPress policy, se
 
 Fork the repository and open a pull request for code changes, referencing the related issue where relevant. For maintainer expectations, see [CONTRIBUTING](.github/CONTRIBUTING.md).
 
-Documentation improvements are welcome via pull request. Edit `website/content/` and preview with `.\scripts\Invoke-HugoSite.ps1 serve`. See [CONTRIBUTING](.github/CONTRIBUTING.md).
+Documentation improvements are welcome via pull request. Edit `website/content/` and preview with `./scripts/invoke-hugo-site.sh serve` (or `.\scripts\Invoke-HugoSite.ps1 serve` on PowerShell). See [CONTRIBUTING](.github/CONTRIBUTING.md).
 
 Please follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 

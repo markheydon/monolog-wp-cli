@@ -54,16 +54,14 @@ composer run test:wp
 
 For documentation site changes:
 
-```powershell
-# CI/production-parity build (uses hugo.yaml baseURL — not for local browser preview)
-.\scripts\Invoke-HugoSite.ps1 build
-
-# Local browser preview with correct asset paths (recommended for visual checks)
-.\scripts\Invoke-HugoSite.ps1 preview -Runtime docker
-
-# Live dev server with hot reload
-.\scripts\Invoke-HugoSite.ps1 serve -Runtime docker
+```shell
+# Bash / zsh / WSL (auto-detects docker or podman)
+./scripts/invoke-hugo-site.sh build     # CI/production-parity build
+./scripts/invoke-hugo-site.sh preview   # local browser preview (recommended)
+./scripts/invoke-hugo-site.sh serve     # live dev server with hot reload
 ```
+
+PowerShell equivalent: `scripts/Invoke-HugoSite.ps1` with the same `build`, `preview`, and `serve` commands.
 
 ## Project skills
 
@@ -87,7 +85,7 @@ Use `.agents/skills/support-governance/SKILL.md` as the shared operating guide f
 ## Documentation site (`website/`)
 
 - Hugo with the [Hextra](https://github.com/imfing/hextra) theme via Go modules (`website/go.mod`).
-- Hugo **extended** is required. Run commands from `website/` or use `scripts/Invoke-HugoSite.ps1`.
+- Hugo **extended** is required. Run commands from `website/` or use `scripts/invoke-hugo-site.sh` (bash/zsh/WSL) or `scripts/Invoke-HugoSite.ps1` (PowerShell).
 - The site deploys to GitHub Pages when a GitHub Release is published (`.github/workflows/hugo.yml`).
 - Public URL: `https://markheydon.me.uk/monolog-wp-cli/`
 
