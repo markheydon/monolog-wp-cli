@@ -26,7 +26,7 @@ Guidelines for coding agents working in this repository.
 - Public user docs live in `website/content/`.
 - Maintainer notes live in `docs/`.
 - Use concise UK English.
-- Do not mention Diataxis or other documentation frameworks in user-facing site copy.
+- User-facing copy in `README.md` and `website/content/` should not explain documentation methodology or name authoring frameworks; use agent skills and `docs/` for methodology.
 - For WordPress-oriented snippets, use WordPress Coding Standards style.
 
 ## Repository source of truth
@@ -63,14 +63,23 @@ For documentation site changes:
 
 PowerShell equivalent: `scripts/Invoke-HugoSite.ps1` with the same `build`, `preview`, and `serve` commands.
 
+## Task routing
+
+- **Code** (`src/`, `tests/`): PHP conventions and change discipline in this file.
+- **User documentation** (`website/content/`): `project-documentation` skill.
+- **README and maintainer markdown** (`README.md`, `docs/**/*.md`): `project-documentation` skill.
+- **Support policy / CI alignment**: `support-governance` skill.
+- **Pre-merge review**: `code-review` skill or `/loop-code-review`.
+- **Dependabot config**: `/update-dependabot` (`.cursor/commands/update-dependabot.md`).
+
 ## Project skills
 
 Use these skills for specialised workflows:
 
 | Skill | When to use |
 |-------|-------------|
-| `documentation-writer` | Creating or editing `website/content/`, user-facing docs |
-| `repo-readme-generator` | Updating `README.md` only |
+| `project-documentation` | README, `docs/`, `website/content/` (Diátaxis placement via skill) |
+| `code-review` | Branch, PR, or local diff review before merge |
 | `support-governance` | Version policy, smoke-test tuples, CI alignment |
 
 Skills live in `.agents/skills/<skill-name>/SKILL.md`.

@@ -10,7 +10,7 @@ Use this folder for:
 
 Keep entries concise and factual. Prefer one file per topic.
 
-Public user documentation lives in [`website/content/`](../website/content/).
+Public user documentation lives in [`website/content/`](../website/content/). When drafting or updating maintainer notes here, use the `project-documentation` skill in [`.agents/skills/project-documentation/`](../.agents/skills/project-documentation/SKILL.md).
 
 ## Index
 
