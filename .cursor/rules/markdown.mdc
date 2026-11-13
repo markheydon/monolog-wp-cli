@@ -1,0 +1,14 @@
+---
+description: Markdown documentation authoring
+globs: "**/*.md"
+alwaysApply: false
+---
+
+# Markdown Documentation
+
+- Use UK English spelling.
+- For documentation work, use the `project-documentation` skill in `.agents/skills/`.
+- Ground content in `AGENTS.md`, `composer.json`, and repository source-of-truth files under `docs/` when writing maintainer or README content.
+- User-facing `website/content/` and `README.md` must not name documentation frameworks (Diátaxis, quadrants, and similar) in prose. Nav section labels are fine.
+- Maintainer notes in `docs/` and agent skills may reference Diátaxis openly.
+- For WordPress-oriented snippets in user docs, use WordPress Coding Standards style.
