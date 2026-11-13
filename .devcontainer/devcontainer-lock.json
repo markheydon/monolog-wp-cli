@@ -14,6 +14,11 @@
       "version": "1.0.2",
       "resolved": "ghcr.io/markheydon/devcontainer-features/copilot-likes@sha256:e30af507eced74859c110c1fd2f166cae6a8d7d88b8711e15cccd9dd56dc76f9",
       "integrity": "sha256:e30af507eced74859c110c1fd2f166cae6a8d7d88b8711e15cccd9dd56dc76f9"
+    },
+    "ghcr.io/stu-bell/devcontainer-features/cursor-cli:0": {
+      "version": "0.1.0",
+      "resolved": "ghcr.io/stu-bell/devcontainer-features/cursor-cli@sha256:d524f4a32d6aaac920c5673968deeba1b2344b7dda28079cc5117cb470b09d84",
+      "integrity": "sha256:d524f4a32d6aaac920c5673968deeba1b2344b7dda28079cc5117cb470b09d84"
     }
   }
 }
