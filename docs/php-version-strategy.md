@@ -81,7 +81,7 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
     - **Intentional restriction path:** runtime PHP floor is higher than Monolog minimum and rationale is documented.
 - If you include concrete constraint values in this document, add a date label and update or remove them when they are no longer current.
 
-### Current application snapshot (2026-07-13)
+### Current application snapshot (2026-11-13)
 
 - Active release line target: Monolog `^3.0`.
 - Chosen path: **Alignment path**.

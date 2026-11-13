@@ -23,7 +23,7 @@ This package has a small runtime surface (logging via WP-CLI). Supply-chain moni
 Local check before tagging:
 
 ```shell
-composer run audit
+composer run audit:locked
 ```
 
 ## Repository settings checklist
