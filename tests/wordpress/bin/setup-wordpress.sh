@@ -11,7 +11,7 @@ WORDPRESS_URL="${WORDPRESS_URL:-http://localhost:${WORDPRESS_HTTP_PORT}}"
 FIXTURE_DIR="$ROOT_DIR/tests/wordpress/fixtures/monolog-wp-cli-smoke"
 FIXTURE_BUILD_DIR="$(mktemp -d)"
 PLUGIN_DST_DIR="/var/www/html/wp-content/plugins/monolog-wp-cli-smoke"
-WP=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE" run --rm --entrypoint wp wpcli)
+WP=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE" run --rm -T --entrypoint wp wpcli)
 COMPOSE=(docker compose --project-directory "$COMPOSE_DIR" -f "$COMPOSE_FILE")
 
 cleanup() {

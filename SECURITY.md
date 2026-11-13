@@ -28,3 +28,7 @@ There are no guaranteed SLAs, but all legitimate reports will be taken seriously
 
 - Vulnerabilities in third-party dependencies (please report those upstream).
 - Issues only reproducible in unsupported or unofficial builds.
+
+## Maintainers
+
+Operational steps for dependency monitoring and `2.x` backports live in [docs/security-maintenance.md](docs/security-maintenance.md).

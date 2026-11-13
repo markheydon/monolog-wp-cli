@@ -12,7 +12,13 @@ Current Composer constraints:
 - PHP: `^8.1`
 - Monolog: `^3.0`
 
-If you still use Monolog 2, use the maintained v2.x branch instead of `main`.
+If you still use Monolog 2, use the maintained `2.x` branch instead of `main`. To move an existing integration to the Monolog 3 release line on `main`, follow the [upgrade guide on GitHub](https://github.com/markheydon/monolog-wp-cli/blob/main/UPGRADE.md).
+
+## Package CI PHP coverage
+
+Pull-request CI runs runtime smoke checks and PHPUnit on PHP `8.1` through `8.6`. That exercises the library outside Docker-based WordPress images.
+
+WordPress smoke jobs use only the tuple list below. PHP `8.6` is covered by package jobs only until official WordPress and WP-CLI images publish a matching `php8.6` tag.
 
 ## WordPress-runtime support
 
@@ -36,4 +42,4 @@ These tuples are chosen because they satisfy the support policy and have corresp
 
 ## Monolog 2 legacy support
 
-The v2.x branch uses PHP `^7.2 || ^8.0` with Monolog `^2.5`. Critical fixes may be backported when warranted. New feature development focuses on the Monolog 3 line on `main`.
+The `2.x` branch uses PHP `^7.2 || ^8.0` with Monolog `^2.5`. Critical fixes may be backported when warranted. New feature development focuses on the Monolog 3 line on `main`.

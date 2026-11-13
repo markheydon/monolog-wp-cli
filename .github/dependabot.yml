@@ -25,8 +25,60 @@ updates:
         patterns:
           - "*"
 
+  - package-ecosystem: "composer"
+    directory: "/"
+    target-branch: "2.x"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    assignees:
+      - "markheydon"
+    groups:
+      composer-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+      composer-major:
+        update-types:
+          - "major"
+        patterns:
+          - "*"
+
   - package-ecosystem: "github-actions"
     directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    assignees:
+      - "markheydon"
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+      actions-major:
+        update-types:
+          - "major"
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "2.x"
     schedule:
       interval: "weekly"
       day: "monday"

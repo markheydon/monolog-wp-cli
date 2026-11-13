@@ -16,7 +16,9 @@ composer require mhcg/monolog-wp-cli
 - PHP `^8.1`
 - monolog/monolog `^3.0`
 
-Current stable releases target the Monolog 3 line. The v2.x branch is maintained separately for Monolog 2 users and receives critical fixes.
+Current stable releases target the Monolog 3 line. The `2.x` branch is maintained separately for Monolog 2 users and receives critical fixes.
+
+Upgrading from monolog-wp-cli v2.x or Monolog 2? See [UPGRADE.md](UPGRADE.md).
 
 Official WordPress-runtime support is maintained separately from the package runtime floor. The current policy supports the current and previous WordPress major series through an explicit smoke-test tuple list rather than a blanket WordPress/PHP cross-product claim.
 
@@ -193,7 +195,7 @@ WORDPRESS_VERSION=6.8 WORDPRESS_PHP_VERSION=8.4 composer run test:wp
 
 CI runs on pull requests and pushes to `main`.
 
-- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 8.1 to 8.5, runs unit tests across PHP 8.1 to 8.5 using a compatible PHPUnit line per PHP version, runs dependency audit, PHPMD, and PHPCS on PHP 8.3, and runs a dedicated WordPress smoke matrix for the repository's officially supported WordPress/PHP tuples.
+- `PHP CI` validates Composer metadata, runs runtime smoke checks on PHP 8.1 to 8.6, runs unit tests across PHP 8.1 to 8.6 using a compatible PHPUnit line per PHP version, runs dependency audit, PHPMD, and PHPCS on PHP 8.3, and runs a dedicated WordPress smoke matrix for the repository's officially supported WordPress/PHP tuples (PHP 8.6 is covered by package jobs only until official WordPress images ship).
 
 For the reasoning behind the support window and tuple-based WordPress policy, see [Compatibility and release-line policy](https://markheydon.me.uk/monolog-wp-cli/docs/explanation/compatibility-and-release-line-policy/).
 

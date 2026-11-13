@@ -18,7 +18,7 @@ Guidelines for coding agents working in this repository.
 - Follow PSR-12 for `src/` and `tests/` (enforced by PHPCS).
 - Preserve Composer package identity `mhcg/monolog-wp-cli` unless explicitly asked to migrate.
 - Keep runtime compatibility statements aligned with `composer.json` and CI evidence.
-- Current `main` targets Monolog 3 (`^3.0`) on PHP `^8.1`. The v2.x branch is maintained separately for Monolog 2.
+- Current `main` targets Monolog 3 (`^3.0`) on PHP `^8.1`. The `2.x` branch is maintained separately for Monolog 2.
 
 ## Documentation conventions
 

@@ -59,6 +59,7 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 - Use separate maintenance branches when both lines are active.
 - Define and publish support windows (active vs security-only) for each line.
 - Backport only fixes that are relevant and safe for the older line.
+- Maintainer detection and response for security issues (dependency audit, Dependabot, backports) is documented in [security-maintenance.md](security-maintenance.md).
 
 ## Handling tooling/CI vs runtime policy conflicts
 
@@ -80,12 +81,12 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
     - **Intentional restriction path:** runtime PHP floor is higher than Monolog minimum and rationale is documented.
 - If you include concrete constraint values in this document, add a date label and update or remove them when they are no longer current.
 
-### Current application snapshot (2026-07-13)
+### Current application snapshot (2026-11-13)
 
 - Active release line target: Monolog `^3.0`.
 - Chosen path: **Alignment path**.
 - Runtime policy for this line: set `require -> php` to the Monolog 3 baseline (`8.1+`) using a Composer-compatible range (`^8.1`) and keep tooling requirements aligned with this floor.
-- CI policy for this line: run unit tests and runtime compatibility checks from PHP 8.1 upward.
+- CI policy for this line: run unit tests and runtime compatibility checks from PHP 8.1 upward, including PHP 8.6 via `setup-php` ahead of GA. WordPress Docker smoke tuples stay on published `php8.x` image tags only.
 - Monolog 2 status: maintained separately on the `2.x` branch with security and critical fixes; feature development focuses on Monolog 3 on `main`.
 
 ## Decision checklist

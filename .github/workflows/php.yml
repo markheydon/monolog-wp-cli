@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php-version: ['8.1', '8.2', '8.3', '8.4', '8.5']
+        php-version: ['8.1', '8.2', '8.3', '8.4', '8.5', '8.6']
 
     name: Runtime PHP ${{ matrix.php-version }}
 
@@ -42,7 +42,7 @@ jobs:
         run: composer validate --strict
 
       - name: Install dependencies
-        run: composer update --prefer-dist --no-progress --no-interaction --no-dev
+        run: composer install --prefer-dist --no-progress --no-interaction --no-dev
 
       - name: Run runtime smoke test
         run: composer run test:runtime-smoke
@@ -66,6 +66,9 @@ jobs:
             phpunit-version: '^12.5'
           - os: ubuntu-latest
             php-version: '8.5'
+            phpunit-version: '^12.5'
+          - os: ubuntu-latest
+            php-version: '8.6'
             phpunit-version: '^12.5'
 
     name: Unit PHP ${{ matrix.php-version }}
@@ -96,7 +99,7 @@ jobs:
       matrix:
         include:
           - check: audit
-            command: composer audit --locked --no-interaction
+            command: composer run audit:locked
           - check: phpmd
             command: composer run lint:md
           - check: phpcs
@@ -157,7 +160,7 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install runtime dependencies
-        run: composer update --prefer-dist --no-progress --no-interaction --no-dev
+        run: composer install --prefer-dist --no-progress --no-interaction --no-dev
 
       - name: Start WordPress environment
         env:

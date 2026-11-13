@@ -48,6 +48,8 @@ Apply these rules in order.
 
 These tuples are chosen because they are within the policy window and have corresponding official WordPress and WP-CLI images available. These tuples are tested as part of CI for Monolog 3 support.
 
+Package-level CI additionally runs runtime smoke and PHPUnit on PHP `8.6` ahead of official WordPress Docker image tags. Do not extend WordPress-runtime policy claims to PHP `8.6` until a tuple using a published image is added to this list and the CI matrix.
+
 ## Maintenance rules
 
 - Review this policy whenever a new WordPress major release is published.
