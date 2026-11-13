@@ -99,7 +99,7 @@ jobs:
       matrix:
         include:
           - check: audit
-            command: composer audit --locked --no-interaction
+            command: composer run audit:locked
           - check: phpmd
             command: composer run lint:md
           - check: phpcs
