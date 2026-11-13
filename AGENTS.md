@@ -70,6 +70,7 @@ PowerShell equivalent: `scripts/Invoke-HugoSite.ps1` with the same `build`, `pre
 - **README and maintainer markdown** (`README.md`, `docs/**/*.md`): `project-documentation` skill.
 - **Support policy / CI alignment**: `support-governance` skill.
 - **Pre-merge review**: `code-review` skill or `/loop-code-review`.
+- **Dependabot config**: `/update-dependabot` (`.cursor/commands/update-dependabot.md`).
 
 ## Project skills
 
