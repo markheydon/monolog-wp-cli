@@ -217,11 +217,13 @@ hugo_build_streamed() {
     local base_url="${1:-}"
     local container_name="monolog-hugo-build-$$"
     local -a docker_env=()
-    local hugo_cmd="hugo --minify"
+    local container_cmd="cd /site && hugo --minify"
 
     if [[ -n "$base_url" ]]; then
         docker_env+=(-e "HUGO_BASE_URL=$base_url")
-        hugo_cmd='hugo --minify --baseURL "$HUGO_BASE_URL"'
+        # Expands in the container via sh -c, not on the host.
+        # shellcheck disable=SC2016
+        container_cmd='cd /site && hugo --minify --baseURL "$HUGO_BASE_URL"'
     fi
 
     echo "note: using docker cp build (bind mounts unavailable on this Docker host)" >&2
@@ -229,7 +231,7 @@ hugo_build_streamed() {
     rm -rf "$PUBLIC_PATH"
 
     "$RUNTIME" create "${docker_env[@]}" --name "$container_name" -w /site \
-        --entrypoint sh "$HUGO_IMAGE" -c "cd /site && $hugo_cmd"
+        --entrypoint sh "$HUGO_IMAGE" -c "${container_cmd}"
     "$RUNTIME" cp "$SITE_DIR/." "$container_name:/site"
     if ! "$RUNTIME" start -a "$container_name"; then
         "$RUNTIME" rm -f "$container_name" >/dev/null 2>&1 || true
