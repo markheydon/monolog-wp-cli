@@ -107,7 +107,33 @@ volume_mount() {
     fi
 }
 
-hugo_build() {
+# Docker-outside-of-Docker (Dev Containers / Codespaces) runs the host daemon, so bind
+# mounts use host paths. When the workspace only exists inside the dev container, mounts
+# look empty to nested containers — the symptom is Hugo's "Unable to locate config file".
+docker_bind_mount_works() {
+    local host_path="$1"
+    local workdir="$2"
+    local test_file="$3"
+
+    "$RUNTIME" run --rm \
+        -v "$(volume_mount "$host_path" /src)" \
+        -w "$workdir" \
+        "$HUGO_IMAGE" \
+        test -f "$test_file"
+}
+
+hugo_extended_available() {
+    command -v hugo >/dev/null 2>&1 && hugo version 2>/dev/null | grep -qi extended
+}
+
+assert_public_index() {
+    if [[ ! -f "$PUBLIC_PATH/index.html" ]]; then
+        echo "error: Hugo did not produce website/public/index.html" >&2
+        exit 1
+    fi
+}
+
+hugo_build_bind_mount() {
     local base_url="${1:-}"
     local -a hugo_args=(--minify)
 
@@ -120,11 +146,112 @@ hugo_build() {
         -w /src/website \
         "$HUGO_IMAGE" \
         hugo "${hugo_args[@]}"
+}
 
-    if [[ ! -f "$PUBLIC_PATH/index.html" ]]; then
-        echo "error: Hugo did not produce website/public/index.html" >&2
-        exit 1
+hugo_build_local() {
+    local base_url="${1:-}"
+    local -a hugo_args=(--minify)
+
+    if [[ -n "$base_url" ]]; then
+        hugo_args+=(--baseURL "$base_url")
     fi
+
+    (
+        cd "$SITE_DIR"
+        hugo "${hugo_args[@]}"
+    )
+}
+
+hugo_build_streamed() {
+    local base_url="${1:-}"
+    local container_name="monolog-hugo-build-$$"
+    local -a docker_env=()
+    local hugo_cmd="hugo --minify"
+
+    if [[ -n "$base_url" ]]; then
+        docker_env+=(-e "HUGO_BASE_URL=$base_url")
+        hugo_cmd='hugo --minify --baseURL "$HUGO_BASE_URL"'
+    fi
+
+    echo "note: using docker cp build (bind mounts unavailable on this Docker host)" >&2
+
+    rm -rf "$PUBLIC_PATH"
+
+    "$RUNTIME" create "${docker_env[@]}" --name "$container_name" -w /site \
+        --entrypoint sh "$HUGO_IMAGE" -c "cd /site && $hugo_cmd"
+    "$RUNTIME" cp "$SITE_DIR/." "$container_name:/site"
+    if ! "$RUNTIME" start -a "$container_name"; then
+        "$RUNTIME" rm -f "$container_name" >/dev/null 2>&1 || true
+        return 1
+    fi
+    "$RUNTIME" cp "$container_name:/site/public/." "$PUBLIC_PATH"
+    "$RUNTIME" rm -f "$container_name" >/dev/null 2>&1 || true
+}
+
+hugo_build() {
+    local base_url="${1:-}"
+
+    if docker_bind_mount_works "$REPO_ROOT" /src/website hugo.yaml; then
+        hugo_build_bind_mount "$base_url"
+    elif hugo_extended_available; then
+        hugo_build_local "$base_url"
+    else
+        hugo_build_streamed "$base_url"
+    fi
+
+    assert_public_index
+}
+
+serve_static_preview() {
+    if docker_bind_mount_works "$REPO_ROOT/website/public" /usr/share/nginx/html index.html; then
+        "$RUNTIME" run --rm -p "${PREVIEW_PORT}:80" \
+            -v "$(volume_mount "$REPO_ROOT/website/public" /usr/share/nginx/html ro)" \
+            "$NGINX_IMAGE"
+        return
+    fi
+
+    local container_name="monolog-hugo-preview-$$"
+
+    echo "note: serving preview via docker cp (bind mounts unavailable on this Docker host)" >&2
+    "$RUNTIME" create --name "$container_name" -p "${PREVIEW_PORT}:80" \
+        --entrypoint sh "$NGINX_IMAGE" -c 'exec nginx -g "daemon off;"'
+    "$RUNTIME" cp "$PUBLIC_PATH/." "$container_name:/usr/share/nginx/html"
+    if ! "$RUNTIME" start -a "$container_name"; then
+        "$RUNTIME" rm -f "$container_name" >/dev/null 2>&1 || true
+        return 1
+    fi
+    "$RUNTIME" rm -f "$container_name" >/dev/null 2>&1 || true
+}
+
+hugo_serve() {
+    if docker_bind_mount_works "$REPO_ROOT" /src/website hugo.yaml; then
+        "$RUNTIME" run --rm -p "${SERVE_PORT}:1313" \
+            -v "$(volume_mount "$REPO_ROOT" /src)" \
+            -w /src/website \
+            "$HUGO_IMAGE" \
+            hugo server --bind 0.0.0.0 --baseURL "http://localhost:${SERVE_PORT}"
+        return
+    fi
+
+    if hugo_extended_available; then
+        (
+            cd "$SITE_DIR"
+            exec hugo server --bind 0.0.0.0 --baseURL "http://localhost:${SERVE_PORT}"
+        )
+        return
+    fi
+
+    cat <<EOF >&2
+error: cannot start Hugo live reload in this environment.
+
+Bind mounts from the dev container workspace are not visible to the host Docker daemon
+(Docker-outside-of-Docker). Install Hugo Extended locally, or use:
+
+  ./scripts/invoke-hugo-site.sh preview
+
+for a static build and browser preview.
+EOF
+    exit 1
 }
 
 resolve_runtime
@@ -137,18 +264,12 @@ case "$COMMAND" in
         ;;
     serve)
         echo "Starting Hugo dev server at http://localhost:${SERVE_PORT} ..."
-        "$RUNTIME" run --rm -p "${SERVE_PORT}:1313" \
-            -v "$(volume_mount "$REPO_ROOT" /src)" \
-            -w /src/website \
-            "$HUGO_IMAGE" \
-            hugo server --bind 0.0.0.0 --baseURL "http://localhost:${SERVE_PORT}"
+        hugo_serve
         ;;
     preview)
         echo "Building Hugo site..."
         hugo_build "http://localhost:${PREVIEW_PORT}/"
         echo "Serving website/public at http://localhost:${PREVIEW_PORT} ..."
-        "$RUNTIME" run --rm -p "${PREVIEW_PORT}:80" \
-            -v "$(volume_mount "$REPO_ROOT/website/public" /usr/share/nginx/html ro)" \
-            "$NGINX_IMAGE"
+        serve_static_preview
         ;;
 esac
