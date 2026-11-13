@@ -85,7 +85,7 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 - Active release line target: Monolog `^3.0`.
 - Chosen path: **Alignment path**.
 - Runtime policy for this line: set `require -> php` to the Monolog 3 baseline (`8.1+`) using a Composer-compatible range (`^8.1`) and keep tooling requirements aligned with this floor.
-- CI policy for this line: run unit tests and runtime compatibility checks from PHP 8.1 upward.
+- CI policy for this line: run unit tests and runtime compatibility checks from PHP 8.1 upward, including PHP 8.6 via `setup-php` ahead of GA. WordPress Docker smoke tuples stay on published `php8.x` image tags only.
 - Monolog 2 status: maintained separately on the `2.x` branch with security and critical fixes; feature development focuses on Monolog 3 on `main`.
 
 ## Decision checklist
