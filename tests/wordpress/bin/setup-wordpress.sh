@@ -40,6 +40,7 @@ rsync -a --exclude vendor/ "$FIXTURE_DIR/" "$FIXTURE_BUILD_DIR/"
 "${COMPOSE[@]}" exec -T wordpress rm -rf "$PLUGIN_DST_DIR"
 "${COMPOSE[@]}" exec -T wordpress mkdir -p "$PLUGIN_DST_DIR"
 tar -C "$FIXTURE_BUILD_DIR" -cf - . | "${COMPOSE[@]}" exec -T -i wordpress tar -C "$PLUGIN_DST_DIR" -xf -
+"${COMPOSE[@]}" exec -T wordpress chown -R www-data:www-data "$PLUGIN_DST_DIR"
 
 "${WP[@]}" plugin activate monolog-wp-cli-smoke >/dev/null
 
