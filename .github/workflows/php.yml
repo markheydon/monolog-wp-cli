@@ -42,7 +42,7 @@ jobs:
         run: composer validate --strict
 
       - name: Install dependencies
-        run: composer update --prefer-dist --no-progress --no-interaction --no-dev
+        run: composer install --prefer-dist --no-progress --no-interaction --no-dev
 
       - name: Run runtime smoke test
         run: composer run test:runtime-smoke
@@ -157,7 +157,7 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install runtime dependencies
-        run: composer update --prefer-dist --no-progress --no-interaction --no-dev
+        run: composer install --prefer-dist --no-progress --no-interaction --no-dev
 
       - name: Start WordPress environment
         env:
