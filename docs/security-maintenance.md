@@ -2,6 +2,8 @@
 
 Operational guide for detecting and responding to security issues on `main` (Monolog 3) and `2.x` (Monolog 2). User-facing reporting policy remains in [SECURITY.md](../SECURITY.md).
 
+Branching, Packagist tags, and when to ship a version: [dual-branch releases](dual-branch-releases.md).
+
 ## Scope
 
 | Concern | `main` | `2.x` |
@@ -43,14 +45,15 @@ When an advisory or audit failure appears:
 
 1. Identify whether the vulnerable package is in **`require`** (runtime) or **`require-dev`** only.
 2. **Runtime** — treat as release-blocking for the affected branch; bump and tag a patch after CI passes.
-3. **Dev-only** — still fix promptly on the maintenance branch, but document if consumers are unaffected.
+3. **Dev-only** — fix promptly on the affected branch; consumers are unaffected (their installs do not use this repo’s `require-dev` lockfile). A patch tag is optional—see [when a patch tag is required](dual-branch-releases.md#when-a-patch-tag-is-required).
 4. Confirm the advisory applies to the **locked versions** on that branch (`composer audit --locked`).
+5. **Scheduled Security audit** — each matrix leg is one ref (`main` or `2.x`). A failed `2.x` leg does not imply `^3.0` installs are vulnerable, and the reverse.
 
 ## Responding on `2.x`
 
 1. Prefer merging a Dependabot pull request targeting `2.x` when one exists.
 2. Otherwise update `composer.lock` on `2.x`, run `composer run qa` (and WordPress smoke if the change is risky).
-3. Tag a patch release from `2.x` and note the advisory ID in the GitHub release.
+3. **Patch tag** — required for runtime or `src/` fixes; for dev-only lockfile updates, fix the branch first and tag only if you want a published snapshot (note “no consumer action” in the release).
 
 PHP CI for `2.x` is defined only on that branch (PHP 7.2–8.5 matrix). Do not merge `main`’s workflow file onto `2.x` without reviewing matrix differences.
 

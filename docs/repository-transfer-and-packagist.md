@@ -10,6 +10,8 @@
 
 Repository transfer does not require a package rename. Existing installs continue to work as long as the Packagist package remains available and metadata stays accurate.
 
+Release lines (`main` vs `2.x`), semver tags, and consumer constraints are documented in [dual-branch releases](dual-branch-releases.md).
+
 ## Required metadata hygiene
 
 Keep composer.json support URLs aligned to the current repository location:

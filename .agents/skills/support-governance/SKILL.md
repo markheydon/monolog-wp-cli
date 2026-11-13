@@ -33,7 +33,9 @@ Keep those responsibilities separate.
 - `README.md`
 - `website/content/docs/explanation/compatibility-and-release-line-policy.md`
 - `docs/test-under-wordpress.md`
+- `docs/dual-branch-releases.md`
 - `docs/php-version-strategy.md`
+- `docs/security-maintenance.md`
 - `docs/wordpress-support-policy.md`
 - `docs/readme-and-badges.md`
 - `tests/wordpress/docker-compose.yml`

@@ -37,8 +37,10 @@ When writing or updating code or documentation, prioritise:
 - `src/` and `tests/` for behaviour and usage evidence
 - `.github/workflows/php.yml` for CI and compatibility statements
 - `docs/readme-and-badges.md` for README and badge policy
+- `docs/dual-branch-releases.md` for `main` vs `2.x`, Packagist tags, and release tagging
 - `docs/package-identity.md` for package naming policy
 - `docs/php-version-strategy.md` for PHP/Monolog compatibility policy
+- `docs/security-maintenance.md` for advisories, audits, and branch-specific security response
 - `docs/wordpress-support-policy.md` for WordPress-runtime support policy and smoke-test tuples
 
 Do not invent behaviour, compatibility claims, or roadmap commitments unsupported by repository files.
@@ -71,6 +73,7 @@ PowerShell equivalent: `scripts/Invoke-HugoSite.ps1` with the same `build`, `pre
 - **Support policy / CI alignment**: `support-governance` skill.
 - **Pre-merge review**: `code-review` skill or `/loop-code-review`.
 - **Dependabot config**: `/update-dependabot` (`.cursor/commands/update-dependabot.md`).
+- **Security audit / 2.x vs `main` / tagging / Packagist**: `docs/dual-branch-releases.md` and `docs/security-maintenance.md`.
 
 ## Project skills
 

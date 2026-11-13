@@ -14,6 +14,7 @@ Public user documentation lives in [`website/content/`](../website/content/). Wh
 
 ## Index
 
+- [Dual-branch releases and Packagist](dual-branch-releases.md)
 - [Package identity and naming](package-identity.md)
 - [PHP version strategy](php-version-strategy.md)
 - [WordPress runtime support policy](wordpress-support-policy.md)
