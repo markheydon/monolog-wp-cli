@@ -1,50 +1,62 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the reference:
-// https://containers.dev/implementors/json_reference/
 {
 	"name": "Monolog-WP-CLI",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	"image": "mcr.microsoft.com/devcontainers/php:8.3",
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {
-			"version": "2"
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": "false"
 		},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		"ghcr.io/markheydon/devcontainer-features/copilot-likes:1": {}
+		"ghcr.io/markheydon/devcontainer-features/copilot-likes:1": {},
+		"ghcr.io/stu-bell/devcontainer-features/cursor-cli:0": {}
 	},
-	"postCreateCommand": "composer install --prefer-dist --no-progress --no-interaction",
+	"hostRequirements": {
+		"cpus": 2,
+		"memory": "8gb",
+		"storage": "16gb"
+	},
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"containerEnv": {
 		"COMPOSER_MEMORY_LIMIT": "-1",
-		"XDEBUG_MODE": "off"
+		"XDEBUG_MODE": "off",
+		"MONOLOG_HUGO_PREVIEW_PORT": "1314"
 	},
-	// Configure tool-specific properties.
 	"customizations": {
-		// Configure properties specific to VS Code.
 		"vscode": {
-			// Set *default* container specific settings.json values on container create.
 			"settings": {
 				"php.validate.executablePath": "/usr/local/bin/php",
 				"php.debug.port": 9003
-			}
+			},
+			"extensions": [
+				"bmewburn.vscode-intelephense-client",
+				"recca0120.vscode-phpunit",
+				"xdebug.php-debug",
+				"ms-azuretools.vscode-containers"
+			]
 		}
 	},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
-		9003
+		9003,
+		8080,
+		1313,
+		1314
 	],
-	// Use 'portsAttributes' to set default properties for specific forwarded ports. More info: https://code.visualstudio.com/docs/remote/devcontainerjson-reference.
-	// "portsAttributes": {
-	// 	"8000": {
-	// 		"label": "Hello Remote World",
-	// 		"onAutoForward": "notify"
-	// 	}
-	// },
-	// Use 'otherPortsAttributes' to configure any ports that aren't configured using 'portsAttributes'.
-	// "otherPortsAttributes": {
-	// 		"onAutoForward": "silent"
-	// },
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html"
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"portsAttributes": {
+		"9003": {
+			"label": "Xdebug",
+			"onAutoForward": "silent"
+		},
+		"8080": {
+			"label": "WordPress smoke",
+			"onAutoForward": "notify"
+		},
+		"1313": {
+			"label": "Hugo dev server",
+			"onAutoForward": "notify"
+		},
+		"1314": {
+			"label": "Hugo static preview",
+			"onAutoForward": "notify"
+		}
+	},
 	"remoteUser": "vscode"
 }

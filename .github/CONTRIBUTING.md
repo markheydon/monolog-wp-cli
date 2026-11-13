@@ -14,6 +14,18 @@ User-facing documentation lives in `website/content/`. Maintainer notes live in 
 
 The published site is at <https://markheydon.me.uk/monolog-wp-cli/>.
 
+## Dev Container and Codespaces
+
+Open the repository in a Dev Container (VS Code / Cursor) or GitHub Codespaces. The configuration uses `mcr.microsoft.com/devcontainers/php:8.3` with Docker on the host for WordPress smoke tests and the Hugo docs build script.
+
+After the container is created, `post-create` runs `composer install`, `composer validate --strict`, ensures `rsync` is available, and `composer run qa`. WordPress integration still uses nested containers:
+
+```shell
+composer run test:wp
+```
+
+The Hugo helper script (`./scripts/invoke-hugo-site.sh`) detects when bind mounts are not visible to the host Docker daemon (common with Docker-outside-of-Docker) and falls back to `docker cp` for `build` and `preview`. Use `preview` rather than `serve` for docs checks in Dev Containers and Codespaces unless Hugo Extended is installed locally in the container. Hugo preview defaults to port **1314** so it does not clash with WordPress smoke on **8080**; the script will step to the next free port if either is already bound.
+
 ## Development checks
 
 ```shell

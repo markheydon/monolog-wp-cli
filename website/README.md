@@ -17,7 +17,7 @@ From the repository root, use either helper script (both wrap the same container
 
 ```shell
 ./scripts/invoke-hugo-site.sh serve
-./scripts/invoke-hugo-site.sh preview   # static build + nginx on port 8080
+./scripts/invoke-hugo-site.sh preview   # static build + nginx (default port 1314; WordPress smoke uses 8080)
 ./scripts/invoke-hugo-site.sh build     # production-parity output to website/public/
 ```
 

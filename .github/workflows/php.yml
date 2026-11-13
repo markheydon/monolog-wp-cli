@@ -91,7 +91,19 @@ jobs:
         run: vendor/bin/phpunit
 
   qa-tooling:
-    name: Tooling PHP 8.3
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - check: audit
+            command: composer audit --locked --no-interaction
+          - check: phpmd
+            command: composer run lint:md
+          - check: phpcs
+            command: composer run lint:cs
+
+    name: Tooling PHP 8.3 — ${{ matrix.check }}
+
     runs-on: ubuntu-latest
 
     steps:
@@ -109,14 +121,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Audit dependencies
-        run: composer audit --locked --no-interaction
-
-      - name: Run PHPMD
-        run: composer run lint:md
-
-      - name: Run PHPCS
-        run: composer run lint:cs
+      - name: Run ${{ matrix.check }}
+        run: ${{ matrix.command }}
 
   wordpress-smoke:
     strategy:
