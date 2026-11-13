@@ -16,7 +16,9 @@ composer require mhcg/monolog-wp-cli
 - PHP `^8.1`
 - monolog/monolog `^3.0`
 
-Current stable releases target the Monolog 3 line. The v2.x branch is maintained separately for Monolog 2 users and receives critical fixes.
+Current stable releases target the Monolog 3 line. The `2.x` branch is maintained separately for Monolog 2 users and receives critical fixes.
+
+Upgrading from monolog-wp-cli v2.x or Monolog 2? See [UPGRADE.md](UPGRADE.md).
 
 Official WordPress-runtime support is maintained separately from the package runtime floor. The current policy supports the current and previous WordPress major series through an explicit smoke-test tuple list rather than a blanket WordPress/PHP cross-product claim.
 

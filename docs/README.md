@@ -21,7 +21,8 @@ Public user documentation lives in [`website/content/`](../website/content/). Wh
 - [Repository transfer and Packagist behaviour](repository-transfer-and-packagist.md)
 - [README and badge policy](readme-and-badges.md)
 - [Test under WordPress and WP-CLI](test-under-wordpress.md)
+- [Monolog 2 → 3 migration checklist](upgrade-from-monolog-v2-to-v3.md) (historical; user-facing steps in [UPGRADE.md](../UPGRADE.md))
 
-## Planned updates
+## Consumer upgrade guide
 
-- [Upgrade from Monolog v2 to v3](upgrade-from-monolog-v2-to-v3.md)
+Package users should follow [UPGRADE.md](../UPGRADE.md) at the repository root (linked from the README and the public compatibility page).

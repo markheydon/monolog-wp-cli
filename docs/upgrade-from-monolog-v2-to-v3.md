@@ -1,12 +1,12 @@
 # Upgrade monolog-wp-cli from Monolog 2 to 3
 
-**Status**
+**Status (November 2026)**
 
-- ✅ Phase 1 completed (13 July 2026)
-- 🔄 Phase 2–4 next priority
-- ⏳ Phases 5–8 pending
+- ✅ Phases 1–6 completed on `main` (Monolog 3 handler, tests, CI, and public docs).
+- ✅ User-facing migration guide published as [UPGRADE.md](../UPGRADE.md).
+- ⏳ Release tagging (`v3.0.0`) and any final validation in Phases 7–8 remain maintainer actions when ready.
 
-**TL;DR:** Create a new major release (v3.0.0) supporting Monolog 3 with PHP 8.1+ as the floor, while maintaining the v2.x branch on Monolog 2. A `2.x` maintenance branch has been created and `v2.3.0` released as the final planned Monolog 2 feature release. The `main` branch is now the development line for v3.0.0 and beyond. This involves updating the handler to work with Monolog's new `Level` enum and `LogRecord` object, refreshing the CI matrix, and updating all version and compatibility documentation.
+**TL;DR:** `main` targets Monolog 3 with PHP 8.1+ as the floor. The `2.x` branch maintains Monolog 2; `v2.3.0` was the final planned Monolog 2 feature release. This checklist records the migration work. Consumers should use [UPGRADE.md](../UPGRADE.md), not this file.
 
 ---
 
@@ -83,7 +83,7 @@ composer validate --strict
   Unit test matrix:
 
   - [x] Remove PHP 7.x jobs
-  - [x] Keep PHP 8.1–8.5 jobs
+  - [x] Keep PHP 8.1–8.6 jobs (8.6 package jobs only; WordPress tuples stay on published image tags)
 
   WordPress smoke coverage:
 
@@ -209,7 +209,7 @@ composer run test:wp
 
 ## Verification
 
-- [ ] Unit tests pass on PHP 8.1–8.5
+- [ ] Unit tests pass on PHP 8.1–8.6
 - [ ] Runtime smoke tests pass
 - [ ] `composer validate --strict` passes
 - [ ] CI workflow is green

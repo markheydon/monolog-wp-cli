@@ -18,7 +18,7 @@ composer require mhcg/monolog-wp-cli
 - PHP `^8.1`
 - monolog/monolog `^3.0`
 
-The v2.x branch is maintained separately for Monolog 2 users.
+The `2.x` branch is maintained separately for Monolog 2 users.
 
 ## Documentation
 
@@ -29,6 +29,7 @@ The v2.x branch is maintained separately for Monolog 2 users.
 | [WPCLIHandler reference](/docs/reference/wpclihandler/) | Constructor, level mapping, and formatter behaviour. |
 | [Compatibility policy](/docs/explanation/compatibility-and-release-line-policy/) | Package and WordPress support windows. |
 | [FAQs](/docs/faqs/) | Common questions about Monolog, WP-CLI, and this package. |
+| [Upgrade from Monolog 2](https://github.com/markheydon/monolog-wp-cli/blob/main/UPGRADE.md) | Composer constraints and Monolog 3 API changes (`UPGRADE.md` in the repository). |
 
 ## Quick example
 

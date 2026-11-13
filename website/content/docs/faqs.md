@@ -30,3 +30,7 @@ By default, command-line output is message-only. To include Monolog `context` an
 - set `WP_DEBUG` to true in `wp-config.php`.
 
 See the [WPCLIHandler reference](/docs/reference/wpclihandler/) for formatter details.
+
+## How do I upgrade from monolog-wp-cli v2.x or Monolog 2?
+
+Use the Monolog 3 release line on `main` with PHP `^8.1` and `monolog/monolog` `^3.0`. Step-by-step migration notes (Composer constraints, `Level` enum, and optional logger-map overrides) are in [UPGRADE.md](https://github.com/markheydon/monolog-wp-cli/blob/main/UPGRADE.md). If you must stay on Monolog 2, require `^2.3` from the maintained `2.x` branch instead of `^3.0`.

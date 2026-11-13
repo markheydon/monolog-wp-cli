@@ -104,7 +104,7 @@ If you run WP-CLI commands, verify logging output behaves correctly in your loca
 
 ## Staying on Monolog 2
 
-If you need to remain on Monolog 2, the v2.x branch is maintained separately:
+If you need to remain on Monolog 2, the `2.x` branch is maintained separately:
 
 ```json
 {
@@ -115,7 +115,7 @@ If you need to remain on Monolog 2, the v2.x branch is maintained separately:
 }
 ```
 
-The v2.x branch receives critical security fixes. Feature development focuses on v3.x.
+The `2.x` branch receives critical security fixes. Feature development focuses on v3.x on `main`.
 
 ## Further reading
 
