@@ -59,6 +59,7 @@ Define a repeatable policy for PHP support that keeps this package aligned with 
 - Use separate maintenance branches when both lines are active.
 - Define and publish support windows (active vs security-only) for each line.
 - Backport only fixes that are relevant and safe for the older line.
+- Maintainer detection and response for security issues (dependency audit, Dependabot, backports) is documented in [security-maintenance.md](security-maintenance.md).
 
 ## Handling tooling/CI vs runtime policy conflicts
 
