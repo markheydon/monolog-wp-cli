@@ -122,7 +122,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Audit dependencies
-        run: composer audit --locked --no-interaction
+        run: composer run audit:locked
 
       - name: Run PHPMD
         run: composer run lint:md
