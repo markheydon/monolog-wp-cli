@@ -14,6 +14,16 @@ User-facing documentation lives in `website/content/`. Maintainer notes live in 
 
 The published site is at <https://markheydon.me.uk/monolog-wp-cli/>.
 
+## Dev Container and Codespaces
+
+Open the repository in a Dev Container (VS Code / Cursor) or GitHub Codespaces. The configuration uses `mcr.microsoft.com/devcontainers/php:8.3` with Docker on the host for WordPress smoke tests and the Hugo docs build script.
+
+After the container is created, `post-create` runs `composer install`, `composer validate --strict`, ensures `rsync` is available, and `composer run qa`. WordPress integration still uses nested containers:
+
+```shell
+composer run test:wp
+```
+
 ## Development checks
 
 ```shell
