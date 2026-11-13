@@ -54,6 +54,7 @@
       "@lint:md",
       "@lint:cs"
     ],
+    "audit": "composer audit --locked --no-interaction",
     "qa": [
       "@test",
       "@lint"
