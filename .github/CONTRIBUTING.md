@@ -24,7 +24,7 @@ After the container is created, `post-create` runs `composer install`, `composer
 composer run test:wp
 ```
 
-The Hugo helper script (`./scripts/invoke-hugo-site.sh`) detects when bind mounts are not visible to the host Docker daemon (common with Docker-outside-of-Docker) and falls back to `docker cp` for `build` and `preview`. Use `preview` rather than `serve` for docs checks in Dev Containers and Codespaces unless Hugo Extended is installed locally in the container.
+The Hugo helper script (`./scripts/invoke-hugo-site.sh`) detects when bind mounts are not visible to the host Docker daemon (common with Docker-outside-of-Docker) and falls back to `docker cp` for `build` and `preview`. Use `preview` rather than `serve` for docs checks in Dev Containers and Codespaces unless Hugo Extended is installed locally in the container. Hugo preview defaults to port **1314** so it does not clash with WordPress smoke on **8080**; the script will step to the next free port if either is already bound.
 
 ## Development checks
 

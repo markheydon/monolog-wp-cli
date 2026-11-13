@@ -8,7 +8,7 @@ param(
 
     [string]$Runtime = "podman",
     [int]$ServePort = 1313,
-    [int]$PreviewPort = 8080
+    [int]$PreviewPort = $(if ($env:MONOLOG_HUGO_PREVIEW_PORT) { [int]$env:MONOLOG_HUGO_PREVIEW_PORT } else { 1314 })
 )
 
 $ErrorActionPreference = "Stop"

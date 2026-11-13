@@ -17,7 +17,8 @@
 	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"containerEnv": {
 		"COMPOSER_MEMORY_LIMIT": "-1",
-		"XDEBUG_MODE": "off"
+		"XDEBUG_MODE": "off",
+		"MONOLOG_HUGO_PREVIEW_PORT": "1314"
 	},
 	"customizations": {
 		"vscode": {
@@ -36,7 +37,8 @@
 	"forwardPorts": [
 		9003,
 		8080,
-		1313
+		1313,
+		1314
 	],
 	"portsAttributes": {
 		"9003": {
@@ -49,6 +51,10 @@
 		},
 		"1313": {
 			"label": "Hugo dev server",
+			"onAutoForward": "notify"
+		},
+		"1314": {
+			"label": "Hugo static preview",
 			"onAutoForward": "notify"
 		}
 	},

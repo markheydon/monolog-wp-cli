@@ -7,7 +7,8 @@ set -euo pipefail
 COMMAND="build"
 RUNTIME=""
 SERVE_PORT=1313
-PREVIEW_PORT=8080
+# 1314 avoids clashing with WordPress smoke (WORDPRESS_HTTP_PORT defaults to 8080).
+PREVIEW_PORT="${MONOLOG_HUGO_PREVIEW_PORT:-1314}"
 
 usage() {
     cat <<'EOF'
@@ -21,7 +22,7 @@ Commands:
 Options:
   --runtime RUNTIME       Container runtime: docker or podman (auto-detected if omitted)
   --serve-port PORT       Port for serve command (default: 1313)
-  --preview-port PORT     Port for preview command (default: 8080)
+  --preview-port PORT     Port for preview command (default: 1314; env MONOLOG_HUGO_PREVIEW_PORT)
   -h, --help              Show this help
 
 Examples:
@@ -67,6 +68,56 @@ SITE_DIR="$REPO_ROOT/website"
 PUBLIC_PATH="$SITE_DIR/public"
 HUGO_IMAGE="docker.io/hugomods/hugo:latest"
 NGINX_IMAGE="docker.io/library/nginx:alpine"
+
+tcp_port_taken() {
+    local port="$1"
+
+    if command -v ss >/dev/null 2>&1; then
+        if ss -H -tln 2>/dev/null | grep -qE ":${port}([[:space:]]|$)"; then
+            return 0
+        fi
+    fi
+
+    if [[ -n "${RUNTIME:-}" ]] && command -v "$RUNTIME" >/dev/null 2>&1; then
+        if "$RUNTIME" ps --format '{{.Ports}}' 2>/dev/null | grep -qE "(0\\.0\\.0\\.0|:::|\\[::\\]):${port}->"; then
+            return 0
+        fi
+    fi
+
+    return 1
+}
+
+# Pick the requested port, or the next free port if something else (e.g. WordPress smoke) is bound.
+resolve_listen_port() {
+    local var_name="$1"
+    local -n port_ref="$var_name"
+    local requested="$port_ref"
+    local port="$requested"
+    local attempts=0
+    local max_attempts=25
+
+    while tcp_port_taken "$port" && (( attempts < max_attempts )); do
+        if (( attempts == 0 )); then
+            echo "note: port ${port} is already in use; trying the next available port" >&2
+            if [[ "$port" -eq 8080 ]]; then
+                echo "      (8080 is the default WordPress smoke port — composer run wp:env:down frees it.)" >&2
+            fi
+        fi
+        port=$((port + 1))
+        attempts=$((attempts + 1))
+    done
+
+    if tcp_port_taken "$port"; then
+        echo "error: no free TCP port found near ${requested}" >&2
+        exit 1
+    fi
+
+    if (( port != requested )); then
+        echo "note: using port ${port} (requested ${requested})" >&2
+    fi
+
+    port_ref="$port"
+}
 
 resolve_runtime() {
     if [[ -n "$RUNTIME" ]]; then
@@ -263,10 +314,12 @@ case "$COMMAND" in
         echo "Done. Output: $PUBLIC_PATH"
         ;;
     serve)
+        resolve_listen_port SERVE_PORT
         echo "Starting Hugo dev server at http://localhost:${SERVE_PORT} ..."
         hugo_serve
         ;;
     preview)
+        resolve_listen_port PREVIEW_PORT
         echo "Building Hugo site..."
         hugo_build "http://localhost:${PREVIEW_PORT}/"
         echo "Serving website/public at http://localhost:${PREVIEW_PORT} ..."
