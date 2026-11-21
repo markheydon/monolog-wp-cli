@@ -30,6 +30,7 @@ Repo `dependabot.yml` files can easily become inconsistent, overly complex, and 
      - For .NET:
        - test packages (xunit, Moq, Microsoft.NET.Test.Sdk, coverlet, etc.)
        - Microsoft.Extensions.*
+       - Aspire.* (dedicated group; do not fold into Azure)
        - Azure.*
        - OpenTelemetry.*
        - analyzers
@@ -69,6 +70,19 @@ While the app targets the current LTS runtime (e.g. net10.0), do not take `Micro
       - dependency-name: "Microsoft.Extensions.*"
         update-types:
           - version-update:semver-major
+
+### Repos with Aspire hosting packages (`Aspire.*`)
+
+Apply when central package management or project references include `Aspire.Hosting.*` (or other `Aspire.*` NuGet packages). Hosting packages ship on a single aligned major line and must update together; a jump such as 12.x to 17.x is a deliberate migration (CLI pin, dev container install, workflow skills), not routine dependency churn.
+
+Use a dedicated `aspire` group so patch and minor updates land in one PR. A group with `update-types: [minor, patch]` alone is not enough: Dependabot still opens **individual** PRs for semver-major. Add a job-level ignore:
+
+    ignore:
+      - dependency-name: "Aspire.*"
+        update-types:
+          - version-update:semver-major
+
+Keep `Aspire.*` out of the `azure` group; Azure SDK and Functions worker packages are unrelated to Aspire hosting version alignment.
 
 ## Notes
 
