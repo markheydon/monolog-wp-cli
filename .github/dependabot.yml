@@ -1,128 +1,125 @@
 version: 2
 updates:
-  - package-ecosystem: "composer"
-    directory: "/"
+  - package-ecosystem: composer
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
       time: "04:00"
-      timezone: "Europe/London"
+      timezone: Europe/London
     open-pull-requests-limit: 5
     labels:
-      - "dependencies"
+      - dependencies
     assignees:
-      - "markheydon"
+      - markheydon
     groups:
-      composer-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      composer:
         patterns:
           - "*"
-      composer-major:
         update-types:
-          - "major"
-        patterns:
-          - "*"
+          - minor
+          - patch
 
-  - package-ecosystem: "composer"
-    directory: "/"
+  - package-ecosystem: composer
+    directory: /
     target-branch: "2.x"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
       time: "04:00"
-      timezone: "Europe/London"
+      timezone: Europe/London
     open-pull-requests-limit: 5
     labels:
-      - "dependencies"
+      - dependencies
     assignees:
-      - "markheydon"
+      - markheydon
     groups:
-      composer-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      composer:
         patterns:
           - "*"
-      composer-major:
         update-types:
-          - "major"
-        patterns:
-          - "*"
+          - minor
+          - patch
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: docker
+    directory: /tests/wordpress
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
       time: "04:00"
-      timezone: "Europe/London"
+      timezone: Europe/London
     open-pull-requests-limit: 5
     labels:
-      - "dependencies"
+      - dependencies
     assignees:
-      - "markheydon"
+      - markheydon
     groups:
-      actions-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      docker:
         patterns:
           - "*"
-      actions-major:
         update-types:
-          - "major"
-        patterns:
-          - "*"
+          - minor
+          - patch
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "04:00"
+      timezone: Europe/London
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    assignees:
+      - markheydon
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - major
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
     target-branch: "2.x"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
       time: "04:00"
-      timezone: "Europe/London"
+      timezone: Europe/London
     open-pull-requests-limit: 5
     labels:
-      - "dependencies"
+      - dependencies
     assignees:
-      - "markheydon"
+      - markheydon
     groups:
-      actions-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      github-actions:
         patterns:
           - "*"
-      actions-major:
         update-types:
-          - "major"
-        patterns:
-          - "*"
+          - major
+          - minor
+          - patch
 
-  - package-ecosystem: "devcontainers"
-    directory: "/"
+  - package-ecosystem: devcontainers
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
       time: "04:00"
-      timezone: "Europe/London"
+      timezone: Europe/London
     open-pull-requests-limit: 5
     labels:
-      - "dependencies"
+      - dependencies
     assignees:
-      - "markheydon"
+      - markheydon
     groups:
-      devcontainers-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      devcontainers:
         patterns:
           - "*"
-      devcontainers-major:
         update-types:
-          - "major"
-        patterns:
-          - "*"
+          - minor
+          - patch
